@@ -27,6 +27,25 @@
 .App-link {
   color: #61dafb;
 }
+:root {
+  --primary-red: #DC2626;
+  --black: #000000;
+  --white: #FFFFFF;
+  --gray: #666666;
+  --light-gray: #E5E5E5;
+  --bg-gray: #F5F5F5;
+}
+
+/* Typography */
+.text-bold {
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
 @keyframes App-logo-spin {
   from {

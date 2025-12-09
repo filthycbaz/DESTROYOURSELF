@@ -1,0 +1,134 @@
+/* --- RESET HEADER --- */
+.header {
+  background: transparent;
+  border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.header-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;  /* 🧨 Pantalla completa */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* VIDEO DE FONDO */
+.header-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;     /* ocupa todo horizontal */
+  height: 100vh;    /* ocupa todo vertical */
+  object-fit: cover; /* se adapta al espacio sin deformarse */
+  z-index: 0;
+  opacity: 1; /* Si quieres bajar la intensidad, cambia a 0.7, 0.5, etc */
+}
+
+
+
+/* CONTENIDO */
+.header-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* TITULO GRANDE */
+.header-title {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  transition: color 0.2s;
+  font-family: ringold-slab;
+  
+}
+.header-title:hover{
+    color: #DC2626;
+
+}
+/* NAV */
+.header-nav {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Links en blanco */
+.header-nav-link {
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.header-nav-link:hover {
+  color: #DC2626;
+}
+
+/* Badge carrito */
+.header-cart-badge {
+  background: #DC2626;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+/* Logout */
+.header-logout-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 0;
+  color: #fff;
+  transition: color 0.2s;
+}
+
+.header-logout-button:hover {
+  color: #DC2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 40px;
+  }
+
+  .header-nav {
+    gap: 16px;
+  }
+}

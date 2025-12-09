@@ -1,0 +1,122 @@
+@import url("https://fonts.googleapis.com/css2?family=Asset&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Meie+Script&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Meie+Script&family=Monsieur+La+Doulaise&display=swap');
+.home-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px px;
+}
+
+.home-hero {
+  text-align: center;
+  margin-bottom: 60px;
+  padding: 70px;
+  min-height: 60vh;
+  background-image: url("https://cdn.cheapoguides.com/wp-content/uploads/sites/2/2016/06/20160602-IMG_3275-770x383.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.home-title-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 40px;
+  text-align: center;
+  overflow: hidden; /* 🔥 evita que el rojo rompa el layout */
+}
+
+/* TÍTULO PRINCIPAL */
+.home-title-first {
+  font-family: 'Times New Roman', serif;
+  font-weight: 900;
+  color: white;
+  opacity: .9;
+  letter-spacing: -2px;
+  font-size: clamp(32px, 8vw, 72px);
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+  box-shadow: #000;
+}
+
+/* TÍTULO ROJO */
+.home-title-back {
+  font-family:  Monsieur La Doulaise, sans-serif;
+  font-weight: 400;
+  color: red;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -48%) rotate(-3deg);
+  opacity: 0.58;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: clamp(20px, 6.5vw, 48px); /* 🔥 más chico para mobile */
+  z-index: 1;
+  width: 100%;      /* 🔥 Se adapta al contenedor */
+  text-align: center;
+}
+
+.home-hero-description {
+  font-family: Monsieur La Doulaise, sans-serif;
+  font-size: 40px;
+  color: white;
+  opacity: .7;
+  max-width: 600px;
+  margin: 0 auto;
+
+}
+
+/* FILTROS */
+.home-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.home-filter-button {
+  padding: 12px 24px;
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.home-filter-button:hover,
+.home-filter-button.active {
+  background: #000;
+  color: #fff;
+}
+
+/* GRID */
+.home-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* 🔥 MOBILE FIX — TITULO PERFECTO Y NO ROMPE */
+@media (max-width: 600px) {
+
+  .home-title-first {
+    letter-spacing: -1px;
+    font-size: clamp(26px, 10vw, 40px);
+  }
+
+  .home-title-back {
+    font-size: clamp(18px, 9vw, 30px);
+    opacity: 0.22;
+  }
+
+  .home-products-grid {
+    grid-template-columns: 1fr;
+  }
+}
