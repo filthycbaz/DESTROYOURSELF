@@ -1,102 +1,105 @@
+/* Fondo general de la página */
 .confirmation-container {
-  max-width: 600px;
-  margin: 80px auto;
-  padding: 40px 24px;
-  text-align: center;
-}
+  min-height: 100vh;
+  padding: 40px 20px;
 
-.confirmation-success-icon {
-  width: 80px;
-  height: 80px;
-  background: #DC2626;
-  border-radius: 50%;
+  /* Imagen de fondo */
+  background-image: url("https://cdn.cosmos.so/2590550f-803e-4072-8819-242946cd4be9?format=jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Centrado del contenido */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: 0 auto 32px;
-  font-size: 40px;
-  color: #fff;
-  font-weight: 900;
+  justify-content: flex-start;
+
+  position: relative;
 }
 
+/* Overlay oscuro para mejorar lectura SIN tapar el arte */
+.confirmation-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.40); /* opacidad suave */
+  z-index: 0;
+}
+
+/* Contenido encima del overlay */
+.confirmation-title,
+.confirmation-text,
+.confirmation-list,
+.confirmation-total,
+.confirmation-container h3 {
+  position: relative;
+  z-index: 2;
+  color: #ffffff; /* blanco total para contraste */
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+}
+
+/* Estilos generales */
 .confirmation-title {
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 900;
-  margin-bottom: 16px;
-}
-
-.confirmation-message {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 32px;
-  line-height: 1.6;
-}
-
-.confirmation-box {
-  border: 2px solid #000;
-  padding: 24px;
-  margin-bottom: 32px;
-  text-align: left;
-}
-
-.confirmation-box-title {
-  font-size: 16px;
-  font-weight: 900;
-  text-transform: uppercase;
   margin-bottom: 16px;
   text-align: center;
 }
 
-.confirmation-order-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.confirmation-order-item-price {
-  font-weight: 700;
-}
-
-.confirmation-divider {
-  border-top: 2px solid #000;
-  margin-top: 16px;
-  padding-top: 16px;
-  display: flex;
-  justify-content: space-between;
+.confirmation-text {
   font-size: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.confirmation-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.confirmation-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  font-size: 18px;
+}
+
+.confirmation-total {
+  font-size: 22px;
   font-weight: 900;
-}
-
-.confirmation-shipping-info p {
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-.confirmation-shipping-info p:last-child {
-  margin-bottom: 0;
-}
-
-.confirmation-continue-button {
-  padding: 16px 32px;
-  background: #000;
+  margin-top: 20px;
   color: #fff;
-  border: none;
-  font-size: 14px;
+  text-align: center;
+}
+.confirmation-order {
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+}
+
+/* Botón regresar */
+.confirmation-back-button {
+  margin-top: 30px;
+  padding: 14px 24px;
+  background: #ffffff;
+  color: #000;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 1px;
-  cursor: pointer;
-  margin-bottom: 16px;
-  transition: background 0.2s;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+  transition: background 0.25s;
 }
 
-.confirmation-continue-button:hover {
-  background: #333;
+.confirmation-back-button:hover {
+  background: #e5e5e5;
 }
 
-.confirmation-delivery-note {
-  font-size: 12px;
-  color: #666;
-  margin-top: 24px;
-}

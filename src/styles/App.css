@@ -1,7 +1,9 @@
 .App {
   text-align: center;
 }
-
+html {
+  scroll-behavior: smooth;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -12,6 +14,16 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+.page-content {
+  padding-top: 90px; /* Ajusta a la altura de tu header */
+  min-height: 100vh;
+  background: #fff;
+}
+
+.page-content.home {
+  padding-top: 0px; /* Home sin padding */
+}
+
 
 .App-header {
   background-color: #282c34;
@@ -53,5 +65,20 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+.page-transition {
+  animation: fadeIn 0.35s ease-out;
+  min-height: 100vh; /* opcional, mejora la estabilidad visual */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

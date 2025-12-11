@@ -59,8 +59,11 @@
 }
 
 .home-hero-description {
-  font-family: Monsieur La Doulaise, sans-serif;
-  font-size: 40px;
+  font-family: 8 "Arial Narrow", sans-serif;
+  font-size: 18px;
+  transform: scaleX(1.4); 
+  letter-spacing: -1px; 
+   filter: blur(0.5px);
   color: white;
   opacity: .7;
   max-width: 600px;

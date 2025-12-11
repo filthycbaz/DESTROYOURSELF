@@ -11,7 +11,7 @@ const HomePage = () => {
     return PRODUCTS.filter(p => p.category === selectedCategory);
   }, [selectedCategory]);
 
-  const categories = ['todos', 'playeras', 'pantalones', 'tenis', 'gorras', 'gafas', 'accesorios'];
+  const categories = ['todos', 'tops', 'bottoms', 'shoes', 'caps',  'accesorios'];
 
   return (
   <div className="home-container">

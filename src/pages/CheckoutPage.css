@@ -1,119 +1,57 @@
 .checkout-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 24px;
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 20px;
 }
 
 .checkout-title {
-  font-size: 48px;
+  font-size: 36px;
   font-weight: 900;
-  margin-bottom: 40px;
-}
-
-.checkout-order-summary {
-  border: 2px solid #000;
-  padding: 24px;
-  margin-bottom: 40px;
-}
-
-.checkout-summary-title {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-
-.checkout-order-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.checkout-order-item-info {
-  font-weight: 700;
-}
-
-.checkout-order-item-details {
-  font-size: 14px;
-  color: #666;
-}
-
-.checkout-order-item-price {
-  font-weight: 700;
-}
-
-.checkout-order-total {
-  display: flex;
-  justify-content: space-between;
-  font-size: 24px;
-  font-weight: 900;
-  margin-top: 20px;
+  margin-bottom: 24px;
+  text-align: center;
 }
 
 .checkout-form {
-  border: 2px solid #000;
-  padding: 32px;
-}
-
-.checkout-form-title {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 24px;
-  text-transform: uppercase;
-}
-
-.checkout-form-group {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .checkout-label {
-  display: block;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 8px;
 }
 
 .checkout-input {
-  width: 100%;
   padding: 12px;
   border: 2px solid #000;
   font-size: 16px;
 }
 
-.checkout-input:disabled {
-  background: #f5f5f5;
-}
-
 .checkout-input:focus {
-  outline: none;
   border-color: #DC2626;
+  outline: none;
 }
 
-.checkout-submit-button {
-  width: 100%;
+.checkout-total {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.checkout-button {
+  background: #000;
+  color: white;
   padding: 16px;
-  background: #DC2626;
-  color: #fff;
   border: none;
-  font-size: 14px;
-  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 900;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: 0.2s ease;
 }
 
-.checkout-submit-button:hover {
-  background: #B91C1C;
-}
-
-.checkout-disclaimer {
-  text-align: center;
-  margin-top: 16px;
-  font-size: 12px;
-  color: #666;
+.checkout-button:hover {
+  background: #333;
 }

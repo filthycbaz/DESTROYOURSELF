@@ -1,151 +1,109 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import './CheckoutPage.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
+import "./CheckoutPage.css";
 
-const CheckoutPage = () => {
-  const { cart, user, clearCart } = useApp();
+export default function CheckoutPage() {
+  const { cart, clearCart } = useApp();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [message, setMessage] = useState('');
-  
-  const [formData, setFormData] = useState({
-    address: '',
-    city: '',
-    phone: ''
+
+  // -------------------------------
+  //  Estado del formulario
+  // -------------------------------
+  const [form, setForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    address: ""
   });
 
-  const total = useMemo(() => {
-    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }, [cart]);
-
-  useEffect(() => {
-    if (!user) {
-      setMessage('Debes iniciar sesión para continuar');
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    if (cart.length === 0) {
-      navigate('/cart');
-    }
-  }, [cart, navigate]);
-
-  if (!user || cart.length === 0) return null;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.address || !formData.city || !formData.phone) {
-      setMessage('Por favor completa todos los campos');
-      return;
-    }
-
-    const orderData = {
-      user,
-      items: cart,
-      total,
-      address: formData,
-      orderDate: new Date().toISOString()
-    };
-
-    localStorage.setItem('dys_last_order', JSON.stringify(orderData));
-    clearCart();
-    navigate('/confirmation');
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
+  // -------------------------------
+  //  Helper para generar ID de orden
+  // -------------------------------
+  const generateOrderId = () =>
+    "ORD-" + Math.random().toString(16).substring(2, 8).toUpperCase();
+
+  // -------------------------------
+  //  Manejo del envío del formulario
+  // -------------------------------
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const order = {
+      items: cart,
+      customer: form,
+      date: new Date().toISOString(),
+      orderId: generateOrderId()
+    };
+
+    // Guardamos la orden para renderizarla en ConfirmationPage
+    localStorage.setItem("lastOrder", JSON.stringify(order));
+
+    clearCart();
+    navigate("/confirmation");
+  };
+
+  // -------------------------------
+  //  Cálculo del total
+  // -------------------------------
+  const total = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+
+  // -------------------------------
+  //  JSX
+  // -------------------------------
   return (
     <div className="checkout-container">
-      
-      <h1 className="checkout-title">CHECKOUT</h1>
-
-      {message && (
-        <p style={{ color: '#DC2626', fontWeight: 700, marginBottom: '12px' }}>
-          {message}
-        </p>
-      )}
-
-      <div className="checkout-order-summary">
-        <h2 className="checkout-summary-title">Tu Orden</h2>
-
-        {cart.map(item => (
-          <div key={`${item.id}-${item.size}`} className="checkout-order-item">
-            <div>
-              <div className="checkout-order-item-info">{item.name}</div>
-              <div className="checkout-order-item-details">
-                Talla: {item.size} × {item.quantity}
-              </div>
-            </div>
-            <div className="checkout-order-item-price">
-              ${item.price * item.quantity} MXN
-            </div>
-          </div>
-        ))}
-
-        <div className="checkout-order-total">
-          <span>TOTAL</span>
-          <span>${total} MXN</span>
-        </div>
-      </div>
+      <h1 className="checkout-title">Finalizar Compra</h1>
 
       <form onSubmit={handleSubmit} className="checkout-form">
-        <h2 className="checkout-form-title">Información de Envío</h2>
 
-        <div className="checkout-form-group">
-          <label className="checkout-label">Nombre</label>
-          <input type="text" value={user.name} disabled className="checkout-input" />
+        <label className="checkout-label">Nombre</label>
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          className="checkout-input"
+          required
+        />
+
+        <label className="checkout-label">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          className="checkout-input"
+          required
+        />
+
+        <label className="checkout-label">Dirección</label>
+        <input
+          name="address"
+          value={form.address}
+          onChange={handleChange}
+          className="checkout-input"
+          required
+        />
+
+        <div className="checkout-total">
+          Total a pagar: <strong>${total} MXN</strong>
         </div>
 
-        <div className="checkout-form-group">
-          <label className="checkout-label">Email</label>
-          <input type="email" value={user.email} disabled className="checkout-input" />
-        </div>
-
-        <div className="checkout-form-group">
-          <label className="checkout-label">Dirección</label>
-          <input
-            type="text"
-            value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="checkout-input"
-            placeholder="Calle y número"
-            required
-          />
-        </div>
-
-        <div className="checkout-form-group">
-          <label className="checkout-label">Ciudad</label>
-          <input
-            type="text"
-            value={formData.city}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="checkout-input"
-            placeholder="Ciudad, Estado, CP"
-            required
-          />
-        </div>
-
-        <div className="checkout-form-group">
-          <label className="checkout-label">Teléfono</label>
-          <input
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="checkout-input"
-            placeholder="(555) 123-4567"
-            required
-          />
-        </div>
-
-        <button type="submit" className="checkout-submit-button">
-          CONFIRMAR COMPRA
+        <button type="submit" className="checkout-button">
+          Confirmar Compra
         </button>
-
-        <p className="checkout-disclaimer">
-          Esta es una compra simulada. No se procesará ningún pago real.
-        </p>
       </form>
     </div>
   );
-};
-
-export default CheckoutPage;
+}

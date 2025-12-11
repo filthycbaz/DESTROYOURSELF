@@ -1,95 +1,80 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AppContext = createContext();
 
-export const useApp = () => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error('useApp must be used within AppProvider');
-  }
-  return context;
-};
+export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const [user, setUser] = useState(null);
 
-  // Load from localStorage on mount
+  // ▀▀▀ 1) Cargar carrito desde localStorage al iniciar
   useEffect(() => {
-    const savedCart = localStorage.getItem('dys_cart');
-    const savedUser = localStorage.getItem('dys_user');
-    
-    if (savedCart) setCart(JSON.parse(savedCart));
-    if (savedUser) setUser(JSON.parse(savedUser));
+    const savedCart = localStorage.getItem("cartData");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
   }, []);
 
-  // Save cart to localStorage
+  // ▀▀▀ 2) Guardar carrito cuando cambie
   useEffect(() => {
-    localStorage.setItem('dys_cart', JSON.stringify(cart));
+    localStorage.setItem("cartData", JSON.stringify(cart));
   }, [cart]);
 
-  // Save user to localStorage
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('dys_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('dys_user');
-    }
-  }, [user]);
+  // ▀▀▀ 3) Agregar producto (con talla)
+  const addToCart = (product) => {
+    setCart((prev) => {
+      const already = prev.find(
+        (item) => item.id === product.id && item.size === product.size
+      );
 
-  const addToCart = (product, size) => {
-    const existingItem = cart.find(item => item.id === product.id && item.size === size);
-    
-    if (existingItem) {
-      setCart(cart.map(item =>
-        item.id === product.id && item.size === size
-          ? { ...item, quantity: item.quantity + 1 }
+      if (already) {
+        return prev.map((item) =>
+          item.id === product.id && item.size === product.size
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+  // ▀▀▀ 4) Cambiar cantidad
+  const updateQuantity = (id, size, qty) => {
+    if (qty < 1) return; // no permitir 0 o negativos
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === id && item.size === size
+          ? { ...item, quantity: qty }
           : item
-      ));
-    } else {
-      setCart([...cart, { ...product, size, quantity: 1 }]);
-    }
+      )
+    );
   };
 
-  const updateQuantity = (productId, size, newQuantity) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId, size);
-    } else {
-      setCart(cart.map(item =>
-        item.id === productId && item.size === size
-          ? { ...item, quantity: newQuantity }
-          : item
-      ));
-    }
+  // ▀▀▀ 5) Eliminar producto (por id + talla)
+  const removeFromCart = (id, size) => {
+    setCart((prev) =>
+      prev.filter((item) => !(item.id === id && item.size === size))
+    );
   };
 
-  const removeFromCart = (productId, size) => {
-    setCart(cart.filter(item => !(item.id === productId && item.size === size)));
-  };
+  // ▀▀▀ 6) Vaciar carrito (para checkout)
+  const clearCart = () => setCart([]);
 
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const login = (userData) => {
-    setUser(userData);
-  };
-
-  const logout = () => {
-    setUser(null);
-  };
+  // (opcional por ahora, útil para la parte de login)
+  const user = null;
 
   return (
-    <AppContext.Provider value={{
-      cart,
-      user,
-      addToCart,
-      updateQuantity,
-      removeFromCart,
-      clearCart,
-      login,
-      logout
-    }}>
+    <AppContext.Provider
+      value={{
+        cart,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        clearCart,
+        user, // ← lo dejamos aquí para que CartPage no truene
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

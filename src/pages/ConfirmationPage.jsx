@@ -1,89 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './ConfirmationPage.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "./ConfirmationPage.css";
 
-const ConfirmationPage = () => {
-  const navigate = useNavigate();
-  const [orderData, setOrderData] = useState(null);
+export default function ConfirmationPage() {
+  const lastOrder = JSON.parse(localStorage.getItem("lastOrder"));
 
-  useEffect(() => {
-    const savedOrder = localStorage.getItem('dys_last_order');
-    if (savedOrder) {
-      setOrderData(JSON.parse(savedOrder));
-    } else {
-      navigate('/');
-    }
-  }, [navigate]);
-
-  if (!orderData) {
-    return null;
+  // Validación: si no hay order, no truenes
+  if (!lastOrder) {
+    return (
+      <div className="confirmation-container">
+        <h1 className="confirmation-title">No hay información de compra</h1>
+        <Link to="/" className="confirmation-back-button">
+          VOLVER A LA TIENDA
+        </Link>
+      </div>
+    );
   }
 
+  const { customer, items, orderId } = lastOrder;
+
+  const total = items.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+
   return (
-    <div className={styles['confirmation-container']}>
+    <div className="confirmation-container">
+      <h1 className="confirmation-title">¡Compra exitosa!</h1>
 
-      <div className={styles['confirmation-success-icon']}>
-        ✓
-      </div>
-
-      <h1 className={styles['confirmation-title']}>
-        ¡COMPRA CONFIRMADA!
-      </h1>
-
-      <p className={styles['confirmation-message']}>
-        Gracias por tu compra, <strong>{orderData.user.name}</strong>.
-        <br />
-        Te enviaremos un correo de confirmación a <strong>{orderData.user.email}</strong>
+      <p className="confirmation-text">
+        Gracias por tu compra, <strong>{customer.name}</strong>.
       </p>
 
-      <div className={styles['confirmation-box']}>
-        <h3 className={styles['confirmation-box-title']}>
-          Resumen de tu orden
-        </h3>
+      {/* Número de orden */}
+      <p className="confirmation-order">
+        Número de orden: <strong>{orderId}</strong>
+      </p>
 
-        {orderData.items.map(item => (
-          <div 
-            key={`${item.id}-${item.size}`}
-            className={styles['confirmation-order-item']}
-          >
-            <span>{item.name} (Talla {item.size}) × {item.quantity}</span>
-            <span className={styles['confirmation-order-item-price']}>
-              ${item.price * item.quantity} MXN
-            </span>
-          </div>
+      <h3>Resumen de tu orden:</h3>
+
+      <ul className="confirmation-list">
+        {items.map((item) => (
+          <li key={`${item.id}-${item.size}`}>
+            {item.name} (Talla {item.size}) x {item.quantity} — $
+            {item.price * item.quantity} MXN
+          </li>
         ))}
+      </ul>
 
-        <div className={styles['confirmation-divider']}>
-          <span>TOTAL</span>
-          <span>${orderData.total} MXN</span>
-        </div>
-      </div>
-
-      <div className={styles['confirmation-box']}>
-        <h3 className={styles['confirmation-box-title']}>
-          Información de Envío
-        </h3>
-
-        <div className={styles['confirmation-shipping-info']}>
-          <p><strong>Dirección:</strong> {orderData.address.address}</p>
-          <p><strong>Ciudad:</strong> {orderData.address.city}</p>
-          <p><strong>Teléfono:</strong> {orderData.address.phone}</p>
-        </div>
-      </div>
-
-      <button
-        onClick={() => navigate('/')}
-        className={styles['confirmation-continue-button']}
-      >
-        SEGUIR COMPRANDO
-      </button>
-
-      <p className={styles['confirmation-delivery-note']}>
-        Recibirás tu pedido en 5-7 días hábiles.
+      <p className="confirmation-total">
+        Total pagado: <strong>${total} MXN</strong>
       </p>
 
+      {/* Botón regresar */}
+      <Link to="/" className="confirmation-back-button">
+        REGRESAR A LA TIENDA
+      </Link>
     </div>
   );
-};
+}
 
-export default ConfirmationPage;
