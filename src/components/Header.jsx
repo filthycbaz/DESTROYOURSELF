@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, User } from "lucide-react";
 
 import { useApp } from "../context/AppContext";
@@ -8,9 +8,11 @@ import "./Header.css";
 
 const Header = () => {
   const { cart } = useApp();         
-  const { user, auth, logout } = useAuth();  
-
+  const { auth, logout } = useAuth();  
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isHome = location.pathname === "/";
 
   const cartItemsCount = useMemo(() => {
     return cart.reduce((total, item) => total + item.quantity, 0);
@@ -22,14 +24,20 @@ const Header = () => {
   };
 
   return (
-    <header className="header-container">
-
-      <video className="header-video" autoPlay loop muted playsInline>
-        <source
-          src="https://res.cloudinary.com/dus3ayd1j/video/upload/f_mp4,q_auto:good/IMG_3791_tgznmw.mp4"
-          type="video/mp4"
-        />
-      </video>
+    <header
+      className={`header-container ${
+        isHome ? "header-home" : "header-fixed"
+      }`}
+    >
+      {/* 🎥 VIDEO SOLO EN HOME */}
+      {isHome && (
+        <video className="header-video" autoPlay loop muted playsInline>
+          <source
+            src="https://res.cloudinary.com/dus3ayd1j/video/upload/f_mp4,q_auto:good/IMG_3791_tgznmw.mp4"
+            type="video/mp4"
+          />
+        </video>
+      )}
 
       <div className="header-content">
         <h1 className="header-title">自分を破壊する</h1>
@@ -37,7 +45,6 @@ const Header = () => {
         <nav className="header-nav">
           <Link to="/" className="header-nav-link">TIENDA</Link>
 
-          {/* Carrito */}
           <Link to="/cart" className="header-nav-link">
             <ShoppingCart size={20} />
             {cartItemsCount > 0 && (
@@ -45,7 +52,6 @@ const Header = () => {
             )}
           </Link>
 
-          {/* LOGIN / LOGOUT */}
           {auth ? (
             <button
               onClick={handleLogout}
@@ -60,7 +66,6 @@ const Header = () => {
           )}
         </nav>
       </div>
-
     </header>
   );
 };

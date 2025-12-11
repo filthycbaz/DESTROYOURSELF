@@ -1,19 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "../context/AppContext"; // 👈 importamos el contexto
+import { useApp } from "../context/AppContext"; 
 import "./ProductCard.css";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
-  const { addToCart } = useApp(); // 👈 sacamos la función del contexto
+  const { addToCart } = useApp(); 
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
   };
 
   const handleAddToCart = (e) => {
-    e.stopPropagation();        // 👈 evita que se dispare el navigate
-    addToCart(product);         // 👈 agrega el producto al carrito
+    e.stopPropagation();      
+    addToCart(product);        
   };
 
   return (

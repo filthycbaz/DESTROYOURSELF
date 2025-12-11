@@ -26,6 +26,7 @@ export default function ConfirmationPage() {
 
   return (
     <div className="confirmation-container">
+      <div className="confirmation-box">
       <h1 className="confirmation-title">¡Compra exitosa!</h1>
 
       <p className="confirmation-text">
@@ -56,6 +57,7 @@ export default function ConfirmationPage() {
       <Link to="/" className="confirmation-back-button">
         REGRESAR A LA TIENDA
       </Link>
+      </div>
     </div>
   );
 }
