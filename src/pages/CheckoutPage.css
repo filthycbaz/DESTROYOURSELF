@@ -1,6 +1,6 @@
 .checkout-page {
   min-height: 100vh;
-  background-image: url("https://cdn.cosmos.so/466159d5-3a89-42d9-aa69-512587c65638?format=jpeg");
+  background-image: url("https://cdn.cosmos.so/2c6ba5cc-368b-4162-8f5f-95e04107796d?format=jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -90,3 +90,187 @@
   }
 }
 
+/* ===== Fieldsets ===== */
+
+.checkout-fieldset {
+  border: 1px solid #000;
+  padding: 20px 20px 16px;
+  margin: 0;
+}
+
+.checkout-legend {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 11px;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #000;
+  padding: 0 6px;
+}
+
+/* ===== Métodos de pago ===== */
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 20px;
+}
+
+.payment-method-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border: none;
+  border-bottom: 1px solid #000;
+  cursor: pointer;
+  background: transparent;
+  user-select: none;
+  transition: background 0.15s, padding 0.15s;
+}
+
+.payment-method-option:first-child {
+  border-top: 1px solid #000;
+}
+
+.payment-method-option.active {
+  background: #000;
+  color: #fff;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+.payment-method-radio {
+  display: none;
+}
+
+.payment-method-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.payment-method-label {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+/* ===== Campos por método ===== */
+
+.payment-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Tarjeta */
+
+.card-number-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.card-brand-badge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #000;
+  border: 1px solid #000;
+  padding: 1px 6px;
+}
+
+.card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.card-field-half {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Info texts */
+
+.payment-info-text {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 13px;
+  color: #000;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* OXXO */
+
+.oxxo-info {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid #000;
+  padding: 12px 14px;
+}
+
+.oxxo-info-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Transferencia */
+
+.transfer-info {
+  border: 1px solid #000;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.transfer-info .payment-info-text {
+  margin-bottom: 10px;
+}
+
+.bank-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid #000;
+  font-size: 13px;
+}
+
+.bank-detail:last-child {
+  border-bottom: none;
+}
+
+.bank-detail-label {
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.bank-detail-value {
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  font-weight: normal;
+  font-size: 13px;
+}

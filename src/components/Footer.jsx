@@ -6,9 +6,11 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
 
-        <div className="footer-left">
-          <h2 className="logo">自分を破壊する</h2>
-          <p className="copy">© {new Date().getFullYear()} Todos los derechos reservados.</p>
+        <div className="footer-brand">
+          <h2 className="footer-title">
+            自分を破壊する
+          </h2>
+          <p className="footer-tagline">ruido visual controlado</p>
         </div>
 
         <div className="footer-links">
@@ -18,6 +20,11 @@ const Footer = () => {
           <a href="/privacy">Privacidad</a>
         </div>
 
+      </div>
+
+      <div className="footer-bottom">
+        <span className="copy">© {new Date().getFullYear()} — todos los derechos reservados</span>
+        <span>✦</span>
       </div>
     </footer>
   );

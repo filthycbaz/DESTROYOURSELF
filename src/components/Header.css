@@ -21,7 +21,7 @@
   background: transparent;
 }
 
-/* VIDEO DE FONDO (SOLO HOME) */
+
 .header-video {
   position: absolute;
   inset: 0;
@@ -56,7 +56,7 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  color: white;
+color: rgba(245, 245, 220, 0.55);
 
   display: flex;
   flex-direction: column;
@@ -78,16 +78,36 @@
 ===================================================== */
 .header-title {
   font-size: 64px;
-  font-weight: 900;
-  letter-spacing: -2px;
-  color: #fff;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 220, 0.55);
   margin: 0;
-  font-family: ringold-slab;
-  transition: color 0.2s;
+  font-family: "futura-pt", "Jost", sans-serif;
+  transition: color 0.4s ease;
+  position: relative;        /* necesario para el pseudo-elemento */
+  display: inline-block;     /* necesario para que el pseudo-elemento tome el ancho del texto */
+}
+
+.header-title::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: yellow;
+  transform: scaleX(0);              /* empieza invisible, colapsado al centro */
+  transform-origin: center;          /* crece desde el centro */
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .header-title:hover {
-  color: #DC2626;
+  color: rgb(252, 252, 252);
+}
+
+.header-title:hover::after {
+  transform: scaleX(1);              /* se extiende completo */
 }
 
 /* TÍTULO COMPACTO */
@@ -101,12 +121,13 @@
 .header-nav {
   display: flex;
   justify-content: center;
-  gap: 32px;
+  gap: 40px;
   align-items: center;
-  font-size: 14px;
-  font-weight: 700;
+  font-family: "futura-pt", "Jost", sans-serif;
+  font-size: 11px;
+  font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.3em;      /* very wide — editorial feel */
 }
 
 /* LINKS */
@@ -116,12 +137,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: color 0.2s;
+  transition: color 0.3s ease;
   position: relative;
 }
 
-.header-nav-link:hover {
-  color: #DC2626;
+.header-nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: yellow;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.header-nav-link:hover::after {
+  transform: scaleX(1);
 }
 
 /* =====================================================
@@ -161,8 +195,12 @@
   transition: color 0.2s;
 }
 
-.header-logout-button:hover {
-  color: #DC2626;
+.header-logout-button {
+  font-family: "futura-pt", "Jost", sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
 }
 
 /* =====================================================

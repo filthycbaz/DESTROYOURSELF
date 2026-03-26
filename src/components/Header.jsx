@@ -29,7 +29,7 @@ const Header = () => {
         isHome ? "header-home" : "header-fixed"
       }`}
     >
-      {/* 🎥 VIDEO SOLO EN HOME */}
+     
       {isHome && (
         <video className="header-video" autoPlay loop muted playsInline>
           <source

@@ -5,22 +5,15 @@ const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-
-  // ▀▀▀ 1) Cargar carrito desde localStorage al iniciar
-  useEffect(() => {
+  const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cartData");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-  }, []);
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  // ▀▀▀ 2) Guardar carrito cuando cambie
   useEffect(() => {
     localStorage.setItem("cartData", JSON.stringify(cart));
   }, [cart]);
 
-  // ▀▀▀ 3) Agregar producto (con talla)
   const addToCart = (product) => {
     setCart((prev) => {
       const already = prev.find(
@@ -39,9 +32,8 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  // ▀▀▀ 4) Cambiar cantidad
   const updateQuantity = (id, size, qty) => {
-    if (qty < 1) return; // no permitir 0 o negativos
+    if (qty < 1) return;
     setCart((prev) =>
       prev.map((item) =>
         item.id === id && item.size === size
@@ -51,18 +43,13 @@ export const AppProvider = ({ children }) => {
     );
   };
 
-  // ▀▀▀ 5) Eliminar producto (por id + talla)
   const removeFromCart = (id, size) => {
     setCart((prev) =>
       prev.filter((item) => !(item.id === id && item.size === size))
     );
   };
 
-  // ▀▀▀ 6) Vaciar carrito (para checkout)
   const clearCart = () => setCart([]);
-
-  // (opcional por ahora, útil para la parte de login)
-  const user = null;
 
   return (
     <AppContext.Provider
@@ -72,7 +59,7 @@ export const AppProvider = ({ children }) => {
         updateQuantity,
         removeFromCart,
         clearCart,
-        user, // ← lo dejamos aquí para que CartPage no truene
+        user: null,
       }}
     >
       {children}

@@ -71,7 +71,7 @@
 .home-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 48px;
+  gap: 55px;
   justify-content: center;
   margin: 60px 0 80px;
 }

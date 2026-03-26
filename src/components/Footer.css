@@ -1,46 +1,159 @@
 .footer {
   width: 100%;
-  background: #000;
-  color: #fff;
-  padding: 40px 0;
-  border-top: 2px solid #d40000; /* rojo detalle */
-  font-family: "Arial Narrow", Arial, sans-serif;
+  background: #050505;
+  color: #f5f5dc;
+  padding: 60px 0 40px;
+  border-top: 3px solid #DC2626;
+  font-family: "futura-pt", "Jost", Arial, sans-serif;
+  overflow: hidden;
+  position: relative;
 }
 
+/* GRID VERDE SUTIL */
+.footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(#00ff66 1px, transparent 1px),
+                    linear-gradient(90deg, #00ff66 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+/* CONTAINER */
 .footer-container {
-  max-width: 1400px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 40px;
 }
 
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 1px;
+/* ===== BRAND / TÍTULO ===== */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.copy {
-  margin-top: 6px;
-  opacity: 0.7;
-  font-size: 14px;
+/* Título estilo header — borde fino, weight light */
+.footer-title {
+  font-size: 42px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f5f5dc;
+  line-height: 1;
+  border: 1px solid #f5f5dc;
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 0;
+  transition: color 0.2s, border-color 0.2s;
 }
 
+.footer-title:hover {
+  color: #DC2626;
+  border-color: #DC2626;
+}
+
+/* Tagline / subtítulo */
+.footer-tagline {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 220, 0.4);
+  margin: 0;
+}
+
+/* ===== NAV LINKS ===== */
+/* Reemplaza los "stickers" rotados por líneas editoriales */
 .footer-links {
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  gap: 0;
 }
 
 .footer-links a {
-  color: #fff;
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: rgba(245, 245, 220, 0.55);
   text-decoration: none;
-  font-size: 14px;
-  transition: color .3s ease;
+  padding: 10px 0;
+  font-size: 10px;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  border-bottom: 1px solid rgba(245, 245, 220, 0.1);
+  transform: none;
+  box-shadow: none;
+  transition: color 0.2s, letter-spacing 0.2s;
+}
+
+.footer-links a:first-child {
+  border-top: 1px solid rgba(245, 245, 220, 0.1);
 }
 
 .footer-links a:hover {
-  color: #d40000; /* hover rojo */
+  color: #DC2626;
+  background: transparent;
+  letter-spacing: 0.4em;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ===== COPY ===== */
+.copy {
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.25;
+  margin-top: 0;
+}
+
+/* ===== BOTTOM ===== */
+.footer-bottom {
+  border-top: 1px solid rgba(245, 245, 220, 0.1);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.4;
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 768px) {
+  .footer-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    min-width: 160px;
+  }
+
+  .footer-title {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-title {
+    font-size: 28px;
+    letter-spacing: 0.15em;
+  }
+
+  .footer-container {
+    padding: 0 20px;
+  }
 }
