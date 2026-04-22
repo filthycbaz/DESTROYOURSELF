@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import Product from "./models/Product.js";
 import Category from "./models/Category.js";
 import User from "./models/User.js";
