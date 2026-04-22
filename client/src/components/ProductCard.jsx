@@ -7,13 +7,15 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useApp(); 
 
+  const productId = product._id ?? product.id;
+
   const handleClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${productId}`);
   };
 
   const handleAddToCart = (e) => {
-    e.stopPropagation();      
-    addToCart(product);        
+    e.stopPropagation();
+    navigate(`/product/${productId}`);
   };
 
   return (

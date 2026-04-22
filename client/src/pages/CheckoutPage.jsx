@@ -75,6 +75,14 @@ function formatExpiry(value) {
   return digits;
 }
 
+// Mapeo de método de pago del frontend al enum del modelo
+const PAYMENT_METHOD_MAP = {
+  card: "tarjeta",
+  transfer: "transferencia",
+  paypal: "efectivo",
+  oxxo: "efectivo",
+};
+
 export default function CheckoutPage() {
   const { cart, clearCart } = useApp();
   const { user } = useAuth();
@@ -83,7 +91,10 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    address: ""
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
   });
 
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -96,6 +107,8 @@ export default function CheckoutPage() {
   });
 
   const [paypalEmail, setPaypalEmail] = useState("");
+
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -114,83 +127,53 @@ export default function CheckoutPage() {
     }
   };
 
-  const generateOrderId = () =>
-    "ORD-" + Math.random().toString(16).substring(2, 8).toUpperCase();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const buildPaymentInfo = () => {
-    switch (paymentMethod) {
-      case "card":
-        return {
-          method: "card",
-          brand: detectCardBrand(cardData.cardNumber),
-          last4: cardData.cardNumber.replace(/\s/g, "").slice(-4),
-          cardHolder: cardData.cardHolder
-        };
-      case "paypal":
-        return { method: "paypal", email: paypalEmail };
-      case "oxxo":
-        return { method: "oxxo", reference: "OXXO-" + Math.random().toString(36).substring(2, 10).toUpperCase() };
-      case "transfer":
-        return { method: "transfer" };
-      default:
-        return { method: paymentMethod };
-    }
-  };
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  // Armar el body que espera tu Order model
-  const orderData = {
-    items: cart.map((item) => ({
-      product: item._id,           // antes era item.id (número), ahora es ObjectId de MongoDB
-      name: item.name,
-      image: item.image,
-      price: item.price,
-      size: item.size,
-      quantity: item.quantity,
-    })),
-    shippingAddress: {
-      street: form.address,
-      city: "",                     // puedes agregar estos campos al form después
-      state: "",
-      zip: "",
-    },
-    payment: buildPaymentInfo(),    // esto no cambia
-    total,
-  };
-
-  try {
-    const res = await fetch("http://localhost:3001/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeader(),         // JWT del usuario autenticado
+    const orderData = {
+      items: cart.map((item) => ({
+        product: item._id ?? item.id,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        size: item.size,
+        quantity: item.quantity,
+      })),
+      shippingAddress: {
+        street: form.street,
+        city: form.city,
+        state: form.state,
+        zip: form.zip,
       },
-      body: JSON.stringify(orderData),
-    });
+      paymentMethod: PAYMENT_METHOD_MAP[paymentMethod],
+      total,
+    };
 
-    const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:3001/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+        body: JSON.stringify(orderData),
+      });
 
-    if (!res.ok) {
-      console.error("Error al crear orden:", data.message);
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Error al crear orden:", data.message);
+        return;
+      }
+
+      localStorage.setItem("lastOrder", JSON.stringify({ ...data, customerName: form.name }));
+      clearCart();
+      navigate("/confirmation");
+
+    } catch (error) {
+      console.error("No se pudo conectar con el servidor:", error);
     }
-
-    // Guardar la orden real para ConfirmationPage
-    localStorage.setItem("lastOrder", JSON.stringify(data));
-    clearCart();
-    navigate("/confirmation");
-
-  } catch (error) {
-    console.error("No se pudo conectar con el servidor:", error);
-  }
-};
-
-  const total = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  };
 
   const cardBrand = detectCardBrand(cardData.cardNumber);
 
@@ -200,7 +183,7 @@ const handleSubmit = async (e) => {
         <h1 className="checkout-title">Finalizar Compra</h1>
 
         <form onSubmit={handleSubmit} className="checkout-form">
-          {/* — Datos personales — */}
+          {/* Datos personales */}
           <fieldset className="checkout-fieldset">
             <legend className="checkout-legend">Datos de contacto</legend>
 
@@ -222,18 +205,55 @@ const handleSubmit = async (e) => {
               className="checkout-input"
               required
             />
+          </fieldset>
 
-            <label className="checkout-label">Dirección</label>
+          {/* Dirección de envío */}
+          <fieldset className="checkout-fieldset">
+            <legend className="checkout-legend">Dirección de envío</legend>
+
+            <label className="checkout-label">Calle y número</label>
             <input
-              name="address"
-              value={form.address}
+              name="street"
+              value={form.street}
               onChange={handleChange}
               className="checkout-input"
               required
             />
+
+            <label className="checkout-label">Ciudad</label>
+            <input
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+              className="checkout-input"
+              required
+            />
+
+            <div className="card-row">
+              <div className="card-field-half">
+                <label className="checkout-label">Estado</label>
+                <input
+                  name="state"
+                  value={form.state}
+                  onChange={handleChange}
+                  className="checkout-input"
+                  required
+                />
+              </div>
+              <div className="card-field-half">
+                <label className="checkout-label">Código postal</label>
+                <input
+                  name="zip"
+                  value={form.zip}
+                  onChange={handleChange}
+                  className="checkout-input"
+                  required
+                />
+              </div>
+            </div>
           </fieldset>
 
-          {/* — Método de pago — */}
+          {/* Método de pago */}
           <fieldset className="checkout-fieldset">
             <legend className="checkout-legend">Método de pago</legend>
 
@@ -257,7 +277,6 @@ const handleSubmit = async (e) => {
               ))}
             </div>
 
-            {/* Tarjeta */}
             {paymentMethod === "card" && (
               <div className="payment-fields card-fields">
                 <div className="card-number-wrapper">
@@ -311,7 +330,6 @@ const handleSubmit = async (e) => {
               </div>
             )}
 
-            {/* PayPal */}
             {paymentMethod === "paypal" && (
               <div className="payment-fields">
                 <p className="payment-info-text">
@@ -329,7 +347,6 @@ const handleSubmit = async (e) => {
               </div>
             )}
 
-            {/* OXXO */}
             {paymentMethod === "oxxo" && (
               <div className="payment-fields">
                 <div className="oxxo-info">
@@ -341,7 +358,6 @@ const handleSubmit = async (e) => {
               </div>
             )}
 
-            {/* Transferencia */}
             {paymentMethod === "transfer" && (
               <div className="payment-fields">
                 <div className="transfer-info">

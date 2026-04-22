@@ -14,21 +14,20 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem("cartData", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product) => {
-    setCart((prev) => {
-      const already = prev.find(
-        (item) => item.id === product.id && item.size === product.size
-      );
+  const itemKey = (item) => `${item._id ?? item.id}-${item.size}`;
 
+  const addToCart = (product, size) => {
+    const entry = { ...product, size };
+    setCart((prev) => {
+      const already = prev.find((item) => itemKey(item) === itemKey(entry));
       if (already) {
         return prev.map((item) =>
-          item.id === product.id && item.size === product.size
+          itemKey(item) === itemKey(entry)
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...entry, quantity: 1 }];
     });
   };
 
@@ -36,7 +35,7 @@ export const AppProvider = ({ children }) => {
     if (qty < 1) return;
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id && item.size === size
+        (item._id ?? item.id) === id && item.size === size
           ? { ...item, quantity: qty }
           : item
       )
@@ -45,7 +44,7 @@ export const AppProvider = ({ children }) => {
 
   const removeFromCart = (id, size) => {
     setCart((prev) =>
-      prev.filter((item) => !(item.id === id && item.size === size))
+      prev.filter((item) => !((item._id ?? item.id) === id && item.size === size))
     );
   };
 
