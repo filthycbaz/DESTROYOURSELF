@@ -26,7 +26,7 @@ const CartItem = ({ item }) => {
 
       <div className="cart-item-actions">
         <button
-          onClick={() => removeFromCart(item.id, item.size)}
+          onClick={() => removeFromCart(item._id ?? item.id, item.size)}
           className="cart-item-remove-button"
         >
           <Trash2 size={20} />
@@ -35,7 +35,7 @@ const CartItem = ({ item }) => {
         <div className="cart-item-quantity-controls">
           <button
             onClick={() =>
-              updateQuantity(item.id, item.size, item.quantity - 1)
+              updateQuantity(item._id ?? item.id, item.size, item.quantity - 1)
             }
             className="cart-item-quantity-button"
           >
@@ -46,7 +46,7 @@ const CartItem = ({ item }) => {
 
           <button
             onClick={() =>
-              updateQuantity(item.id, item.size, item.quantity + 1)
+              updateQuantity(item._id ?? item.id, item.size, item.quantity + 1)
             }
             className="cart-item-quantity-button"
           >

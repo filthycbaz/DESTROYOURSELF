@@ -1,6 +1,4 @@
-// services/authService.js
-
-const API_URL = "http://localhost:3001/api";
+import { API_URL } from "../config/api";
 
 // LOGIN
 export async function login(email, password) {

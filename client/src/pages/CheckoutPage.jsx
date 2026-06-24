@@ -2,86 +2,44 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
-import "./CheckoutPage.css";
 import { getAuthHeader } from "../services/authService";
+import { API_URL } from "../config/api";
+import "./CheckoutPage.css";
 
 const PAYMENT_METHODS = [
   {
-    id: "card",
+    id: "tarjeta",
     label: "Tarjeta de crédito / débito",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-        <line x1="1" y1="10" x2="23" y2="10"/>
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
       </svg>
-    )
+    ),
   },
   {
-    id: "paypal",
-    label: "PayPal",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.379 2.557.949 5.673-1.084 7.817-1.878 1.967-4.666 2.766-8.102 2.766H9.143l-1.136 7.184h4.608a.641.641 0 0 0 .633-.54l.026-.128.52-3.293.033-.18a.641.641 0 0 1 .633-.54h.399c2.58 0 4.598-.543 5.693-2.114.959-1.354 1.134-3.232.67-5.431z"/>
-      </svg>
-    )
-  },
-  {
-    id: "oxxo",
-    label: "OXXO Pay",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="2" y="5" width="20" height="14" rx="2"/>
-        <path d="M2 10h20"/>
-        <circle cx="7" cy="15" r="1" fill="currentColor"/>
-        <line x1="11" y1="13" x2="11" y2="17"/>
-        <line x1="15" y1="13" x2="15" y2="17"/>
-      </svg>
-    )
-  },
-  {
-    id: "transfer",
+    id: "transferencia",
     label: "Transferencia bancaria",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        <line x1="12" y1="15" x2="12" y2="17"/>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        <line x1="12" y1="15" x2="12" y2="17" />
       </svg>
-    )
-  }
+    ),
+  },
+  {
+    id: "efectivo",
+    label: "Pago en efectivo",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="3" />
+        <path d="M6 12h.01M18 12h.01" />
+      </svg>
+    ),
+  },
 ];
-
-const CARD_BRANDS = [
-  { name: "Visa", prefix: ["4"] },
-  { name: "Mastercard", prefix: ["51","52","53","54","55"] },
-  { name: "Amex", prefix: ["34","37"] }
-];
-
-function detectCardBrand(number) {
-  const clean = number.replace(/\s/g, "");
-  for (const brand of CARD_BRANDS) {
-    if (brand.prefix.some(p => clean.startsWith(p))) return brand.name;
-  }
-  return null;
-}
-
-function formatCardNumber(value) {
-  return value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
-}
-
-function formatExpiry(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 4);
-  if (digits.length >= 3) return digits.slice(0, 2) + "/" + digits.slice(2);
-  return digits;
-}
-
-// Mapeo de método de pago del frontend al enum del modelo
-const PAYMENT_METHOD_MAP = {
-  card: "tarjeta",
-  transfer: "transferencia",
-  paypal: "efectivo",
-  oxxo: "efectivo",
-};
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useApp();
@@ -97,16 +55,9 @@ export default function CheckoutPage() {
     zip: "",
   });
 
-  const [paymentMethod, setPaymentMethod] = useState("card");
-
-  const [cardData, setCardData] = useState({
-    cardNumber: "",
-    cardHolder: "",
-    expiry: "",
-    cvv: ""
-  });
-
-  const [paypalEmail, setPaypalEmail] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("tarjeta");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -114,21 +65,10 @@ export default function CheckoutPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleCardChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "cardNumber") {
-      setCardData({ ...cardData, cardNumber: formatCardNumber(value) });
-    } else if (name === "expiry") {
-      setCardData({ ...cardData, expiry: formatExpiry(value) });
-    } else if (name === "cvv") {
-      setCardData({ ...cardData, cvv: value.replace(/\D/g, "").slice(0, 4) });
-    } else {
-      setCardData({ ...cardData, [name]: value });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     const orderData = {
       items: cart.map((item) => ({
@@ -145,37 +85,33 @@ export default function CheckoutPage() {
         state: form.state,
         zip: form.zip,
       },
-      paymentMethod: PAYMENT_METHOD_MAP[paymentMethod],
-      total,
+      paymentMethod,
     };
 
     try {
-      const res = await fetch("http://localhost:3001/api/orders", {
+      const res = await fetch(`${API_URL}/orders`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeader(),
-        },
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify(orderData),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("Error al crear orden:", data.message);
+        setError(data.message || "No se pudo crear la orden. Intenta de nuevo.");
+        setLoading(false);
         return;
       }
 
-      localStorage.setItem("lastOrder", JSON.stringify({ ...data, customerName: form.name }));
-      clearCart();
-      navigate("/confirmation");
-
-    } catch (error) {
-      console.error("No se pudo conectar con el servidor:", error);
+      await clearCart();
+      navigate("/confirmation", {
+        state: { order: data, customerName: form.name },
+      });
+    } catch {
+      setError("No se pudo conectar con el servidor. Intenta de nuevo.");
+      setLoading(false);
     }
   };
-
-  const cardBrand = detectCardBrand(cardData.cardNumber);
 
   return (
     <div className="checkout-page">
@@ -183,7 +119,7 @@ export default function CheckoutPage() {
         <h1 className="checkout-title">Finalizar Compra</h1>
 
         <form onSubmit={handleSubmit} className="checkout-form">
-          {/* Datos personales */}
+          {/* Datos de contacto */}
           <fieldset className="checkout-fieldset">
             <legend className="checkout-legend">Datos de contacto</legend>
 
@@ -255,7 +191,7 @@ export default function CheckoutPage() {
 
           {/* Método de pago */}
           <fieldset className="checkout-fieldset">
-            <legend className="checkout-legend">Método de pago</legend>
+            <legend className="checkout-legend">Método de pago preferido</legend>
 
             <div className="payment-methods">
               {PAYMENT_METHODS.map((method) => (
@@ -277,118 +213,23 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            {paymentMethod === "card" && (
-              <div className="payment-fields card-fields">
-                <div className="card-number-wrapper">
-                  <label className="checkout-label">Número de tarjeta</label>
-                  {cardBrand && <span className="card-brand-badge">{cardBrand}</span>}
-                  <input
-                    name="cardNumber"
-                    value={cardData.cardNumber}
-                    onChange={handleCardChange}
-                    className="checkout-input"
-                    placeholder="0000 0000 0000 0000"
-                    required
-                  />
-                </div>
-
-                <label className="checkout-label">Nombre en la tarjeta</label>
-                <input
-                  name="cardHolder"
-                  value={cardData.cardHolder}
-                  onChange={handleCardChange}
-                  className="checkout-input"
-                  placeholder="Como aparece en la tarjeta"
-                  required
-                />
-
-                <div className="card-row">
-                  <div className="card-field-half">
-                    <label className="checkout-label">Vencimiento</label>
-                    <input
-                      name="expiry"
-                      value={cardData.expiry}
-                      onChange={handleCardChange}
-                      className="checkout-input"
-                      placeholder="MM/AA"
-                      required
-                    />
-                  </div>
-                  <div className="card-field-half">
-                    <label className="checkout-label">CVV</label>
-                    <input
-                      name="cvv"
-                      type="password"
-                      value={cardData.cvv}
-                      onChange={handleCardChange}
-                      className="checkout-input"
-                      placeholder="•••"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {paymentMethod === "paypal" && (
-              <div className="payment-fields">
-                <p className="payment-info-text">
-                  Serás redirigido a PayPal para completar el pago de forma segura.
-                </p>
-                <label className="checkout-label">Email de PayPal</label>
-                <input
-                  type="email"
-                  value={paypalEmail}
-                  onChange={(e) => setPaypalEmail(e.target.value)}
-                  className="checkout-input"
-                  placeholder="tu@correo.com"
-                  required
-                />
-              </div>
-            )}
-
-            {paymentMethod === "oxxo" && (
-              <div className="payment-fields">
-                <div className="oxxo-info">
-                  <span className="oxxo-info-icon">ℹ️</span>
-                  <p className="payment-info-text">
-                    Al confirmar, recibirás una referencia de pago por email. Tienes <strong>72 horas</strong> para pagar en cualquier tienda OXXO. Tu pedido se procesa una vez confirmado el pago.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {paymentMethod === "transfer" && (
-              <div className="payment-fields">
-                <div className="transfer-info">
-                  <p className="payment-info-text">
-                    Al confirmar, recibirás los datos bancarios por email para realizar la transferencia. Tu pedido se procesa al recibir el depósito.
-                  </p>
-                  <div className="bank-detail">
-                    <span className="bank-detail-label">Banco</span>
-                    <span className="bank-detail-value">BBVA México</span>
-                  </div>
-                  <div className="bank-detail">
-                    <span className="bank-detail-label">CLABE</span>
-                    <span className="bank-detail-value">012 180 0123456789 01</span>
-                  </div>
-                  <div className="bank-detail">
-                    <span className="bank-detail-label">Beneficiario</span>
-                    <span className="bank-detail-value">Tu Tienda S.A. de C.V.</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            <p className="payment-info-text" style={{ marginTop: "12px" }}>
+              Una vez confirmada tu orden, te contactaremos para coordinar el pago.
+            </p>
           </fieldset>
 
           <div className="checkout-total">
             Total a pagar: <strong>${total.toFixed(2)} MXN</strong>
           </div>
 
-          <button type="submit" className="checkout-button">
-            {paymentMethod === "oxxo" ? "Generar referencia OXXO" :
-             paymentMethod === "paypal" ? "Continuar con PayPal" :
-             "Confirmar Compra"}
+          {error && (
+            <p style={{ color: "#DC2626", fontWeight: 700, marginBottom: "12px" }}>
+              {error}
+            </p>
+          )}
+
+          <button type="submit" className="checkout-button" disabled={loading}>
+            {loading ? "Procesando..." : "CONFIRMAR ORDEN"}
           </button>
         </form>
       </div>

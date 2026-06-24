@@ -53,12 +53,17 @@ const Header = () => {
           </Link>
 
           {auth ? (
-            <button
-              onClick={handleLogout}
-              className="header-logout-button"
-            >
-              SALIR
-            </button>
+            <>
+              <Link to="/orders" className="header-nav-link" style={{ fontSize: '12px' }}>
+                MIS PEDIDOS
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="header-logout-button"
+              >
+                SALIR
+              </button>
+            </>
           ) : (
             <Link to="/login" className="header-nav-link">
               <User size={20} />

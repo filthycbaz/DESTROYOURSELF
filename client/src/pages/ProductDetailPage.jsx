@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { API_URL } from '../config/api';
 import './ProductDetailPage.css';
-
-const API_URL = 'http://localhost:3001/api';
 
 const ProductDetailPage = () => {
   const { id } = useParams();

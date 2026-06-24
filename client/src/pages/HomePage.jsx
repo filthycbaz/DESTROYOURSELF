@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
+import { API_URL } from '../config/api';
 import './HomePage.css';
-
-const API_URL = 'http://localhost:3001/api';
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);

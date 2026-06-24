@@ -19,6 +19,8 @@ import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
+import OrdersPage from "./pages/OrdersPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
 
 import "./styles/App.css";
 
@@ -43,6 +45,23 @@ function AnimatedRoutes() {
       />
 
       <Route path="/confirmation" element={<ConfirmationPage />} />
+
+      <Route
+        path="/orders"
+        element={
+          <PrivateRoute>
+            <OrdersPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/orders/:id"
+        element={
+          <PrivateRoute>
+            <OrderDetailPage />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }

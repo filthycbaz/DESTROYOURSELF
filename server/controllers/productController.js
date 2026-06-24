@@ -5,7 +5,8 @@ import Product from "../models/Product.js";
 const getProducts = async (req, res, next) => {
   try {
     const { category, page = 1, limit = 10 } = req.query;
-    const filter = category ? { category } : {};
+    const filter = { isAvailable: true };
+    if (category) filter.category = category;
 
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
