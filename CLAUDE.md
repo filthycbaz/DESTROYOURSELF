@@ -7,6 +7,14 @@ Bazar de ropa urbana de segunda mano. Stack: React 19 (CRA) + Express 5 + MongoD
 Ver `AGENTS.md` para la referencia completa de modelos, rutas API y patrones de código.
 Ver `docs/data-flow.md` para el mapa de persistencia (qué vive dónde y por qué).
 
+## Política de modelos y agentes
+
+Este repo tiene un sistema de agentes versionado (`.agents/` + `.claude/agents/`) con una
+política de modelos explícita: Sonnet por defecto en todo agente, Opus solo como override puntual
+en el despacho (nunca fijo), Haiku para transcripción mecánica con plantilla, Codex como segunda
+opinión consultiva sobre PRs ya abiertos. Detalle completo en `.claude/model-policy.md` y el
+listado de agentes en `AGENTS.md`.
+
 ## Stack
 
 | Capa | Tecnología |
