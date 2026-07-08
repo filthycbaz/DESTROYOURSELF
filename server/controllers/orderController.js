@@ -1,15 +1,71 @@
 import Order from "../models/Order.js";
+import Product from "../models/Product.js";
 
 const createOrder = async (req, res, next) => {
   try {
-    const { items, shippingAddress, paymentMethod, total } = req.body;
+    const { items, shippingAddress, paymentMethod } = req.body;
+
+    // Fetch all involved products in one query
+    const productIds = items.map((i) => i.product);
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    // Verify availability, stock, and calculate total server-side
+    let calculatedTotal = 0;
+
+    for (const item of items) {
+      const product = products.find(
+        (p) => p._id.toString() === item.product.toString()
+      );
+
+      if (!product) {
+        return res
+          .status(400)
+          .json({ message: `Producto no encontrado: ${item.product}` });
+      }
+
+      if (!product.isAvailable) {
+        return res.status(400).json({
+          message: `El producto "${product.name}" ya no está disponible`,
+        });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Stock insuficiente para "${product.name}". Disponible: ${product.stock}`,
+        });
+      }
+
+      calculatedTotal += product.price * item.quantity;
+    }
+
+    // Decrement stock for each product
+    for (const item of items) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: -item.quantity },
+      });
+    }
+
+    // Enrich items with server-side product data — never trust client fields
+    const enrichedItems = items.map((item) => {
+      const product = products.find(
+        (p) => p._id.toString() === item.product.toString()
+      );
+      return {
+        product: item.product,
+        size: item.size,
+        quantity: item.quantity,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+      };
+    });
 
     const order = await Order.create({
       user: req.user._id,
-      items,
+      items: enrichedItems,
       shippingAddress,
       paymentMethod,
-      total,
+      total: calculatedTotal,
     });
 
     await order.populate("items.product");

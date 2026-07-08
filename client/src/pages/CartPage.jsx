@@ -68,17 +68,18 @@ const CartPage = () => {
 
               <div className="cart-summary-row">
                 <span>Subtotal</span>
-                <span>${subtotal} MXN</span>
+                <span data-testid="cart-subtotal">${subtotal} MXN</span>
               </div>
 
               <div className="cart-summary-total">
                 <span>TOTAL</span>
-                <span>${subtotal} MXN</span>
+                <span data-testid="cart-total">${subtotal} MXN</span>
               </div>
 
               <button
                 onClick={handleCheckout}
                 className="cart-checkout-button"
+                data-testid="cart-checkout-button"
               >
                 PROCEDER AL PAGO
               </button>
@@ -90,6 +91,7 @@ const CartPage = () => {
                     fontWeight: 700,
                     marginTop: "10px",
                   }}
+                  data-testid="cart-message"
                 >
                   {message}
                 </p>

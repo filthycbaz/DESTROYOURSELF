@@ -32,7 +32,7 @@ npm install
 Crea un archivo `.env` en `/server` con tus variables:
 
 ```env
-PORT=5000
+PORT=3001
 MONGO_URI=mongodb://localhost:27017/destroyourself
 JWT_SECRET=tu_secreto
 ```

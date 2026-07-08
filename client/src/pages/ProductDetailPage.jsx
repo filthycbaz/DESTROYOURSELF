@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { API_URL } from '../config/api';
 import './ProductDetailPage.css';
-
-const API_URL = 'http://localhost:3001/api';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -68,7 +67,7 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="detail-container">
+    <div className="detail-container" data-testid="product-detail">
       <button onClick={() => navigate('/')} className="detail-back-button">
         ← VOLVER
       </button>
@@ -95,6 +94,7 @@ const ProductDetailPage = () => {
                     setMessage('');
                   }}
                   className={`detail-size-button ${selectedSize === size ? 'active' : ''}`}
+                  data-testid={`size-option-${size}`}
                 >
                   {size}
                 </button>
@@ -102,12 +102,15 @@ const ProductDetailPage = () => {
             </div>
           </div>
 
-          <button onClick={handleAddToCart} className="detail-add-button">
+          <button onClick={handleAddToCart} className="detail-add-button" data-testid="add-to-cart-button">
             AGREGAR AL CARRITO
           </button>
 
           {message && (
-            <p style={{ color: '#DC2626', fontWeight: '700', marginTop: '10px', textTransform: 'uppercase' }}>
+            <p
+              style={{ color: '#DC2626', fontWeight: '700', marginTop: '10px', textTransform: 'uppercase' }}
+              data-testid="add-to-cart-message"
+            >
               {message}
             </p>
           )}
