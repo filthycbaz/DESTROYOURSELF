@@ -118,79 +118,91 @@ export default function CheckoutPage() {
       <div className="checkout-container">
         <h1 className="checkout-title">Finalizar Compra</h1>
 
-        <form onSubmit={handleSubmit} className="checkout-form">
+        <form onSubmit={handleSubmit} className="checkout-form" data-testid="checkout-customer-form">
           {/* Datos de contacto */}
           <fieldset className="checkout-fieldset">
             <legend className="checkout-legend">Datos de contacto</legend>
 
-            <label className="checkout-label">Nombre</label>
+            <label className="checkout-label" htmlFor="checkout-name">Nombre</label>
             <input
+              id="checkout-name"
               name="name"
               value={form.name}
               onChange={handleChange}
               className="checkout-input"
               required
+              data-testid="checkout-name-input"
             />
 
-            <label className="checkout-label">Email</label>
+            <label className="checkout-label" htmlFor="checkout-email">Email</label>
             <input
+              id="checkout-email"
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
               className="checkout-input"
               required
+              data-testid="checkout-email-input"
             />
           </fieldset>
 
           {/* Dirección de envío */}
-          <fieldset className="checkout-fieldset">
+          <fieldset className="checkout-fieldset" data-testid="checkout-shipping-form">
             <legend className="checkout-legend">Dirección de envío</legend>
 
-            <label className="checkout-label">Calle y número</label>
+            <label className="checkout-label" htmlFor="checkout-street">Calle y número</label>
             <input
+              id="checkout-street"
               name="street"
               value={form.street}
               onChange={handleChange}
               className="checkout-input"
               required
+              data-testid="checkout-street-input"
             />
 
-            <label className="checkout-label">Ciudad</label>
+            <label className="checkout-label" htmlFor="checkout-city">Ciudad</label>
             <input
+              id="checkout-city"
               name="city"
               value={form.city}
               onChange={handleChange}
               className="checkout-input"
               required
+              data-testid="checkout-city-input"
             />
 
             <div className="card-row">
               <div className="card-field-half">
-                <label className="checkout-label">Estado</label>
+                <label className="checkout-label" htmlFor="checkout-state">Estado</label>
                 <input
+                  id="checkout-state"
                   name="state"
                   value={form.state}
                   onChange={handleChange}
                   className="checkout-input"
                   required
+                  data-testid="checkout-state-input"
                 />
               </div>
               <div className="card-field-half">
-                <label className="checkout-label">Código postal</label>
+                <label className="checkout-label" htmlFor="checkout-zip">Código postal</label>
                 <input
+                  id="checkout-zip"
                   name="zip"
                   value={form.zip}
                   onChange={handleChange}
                   className="checkout-input"
                   required
+                  data-testid="checkout-zip-input"
                 />
               </div>
             </div>
           </fieldset>
 
           {/* Método de pago */}
-          <fieldset className="checkout-fieldset">
+          <fieldset className="checkout-fieldset" data-testid="checkout-payment-form">
             <legend className="checkout-legend">Método de pago preferido</legend>
 
             <div className="payment-methods">
@@ -206,6 +218,7 @@ export default function CheckoutPage() {
                     checked={paymentMethod === method.id}
                     onChange={() => setPaymentMethod(method.id)}
                     className="payment-method-radio"
+                    data-testid={`checkout-payment-${method.id}`}
                   />
                   <span className="payment-method-icon">{method.icon}</span>
                   <span className="payment-method-label">{method.label}</span>
@@ -218,17 +231,16 @@ export default function CheckoutPage() {
             </p>
           </fieldset>
 
-          <div className="checkout-total">
-            Total a pagar: <strong>${total.toFixed(2)} MXN</strong>
+          <div className="checkout-total" data-testid="checkout-total">
+            <span>Total a pagar</span>
+            <strong>${total.toFixed(2)} MXN</strong>
           </div>
 
           {error && (
-            <p style={{ color: "#DC2626", fontWeight: 700, marginBottom: "12px" }}>
-              {error}
-            </p>
+            <p className="checkout-error" data-testid="checkout-error">{error}</p>
           )}
 
-          <button type="submit" className="checkout-button" disabled={loading}>
+          <button type="submit" className="checkout-button" disabled={loading} data-testid="checkout-confirm-button">
             {loading ? "Procesando..." : "CONFIRMAR ORDEN"}
           </button>
         </form>

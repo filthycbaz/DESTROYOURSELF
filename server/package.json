@@ -6,8 +6,13 @@
   "main": "app.js",
   "scripts": {
     "seed": "node seed.js",
-    "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run tests/unit",
+    "test:int": "vitest run tests/integration",
+    "e2e:server": "node scripts/e2e-server.mjs"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +27,10 @@
     "mongoose": "^9.4.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "vitest": "^2.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "mongodb-memory-server": "^10.0.0",
+    "supertest": "^7.0.0"
   }
 }

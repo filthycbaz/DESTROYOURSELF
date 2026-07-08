@@ -1,0 +1,10 @@
+{
+  "seedUser": {
+    "name": "Seb Reyes",
+    "email": "seb@destroy.com"
+  },
+  "invalidCredentials": {
+    "email": "seb@destroy.com",
+    "password": "contraseña-incorrecta"
+  }
+}

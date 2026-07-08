@@ -45,9 +45,24 @@ const createOrder = async (req, res, next) => {
       });
     }
 
+    // Enrich items with server-side product data — never trust client fields
+    const enrichedItems = items.map((item) => {
+      const product = products.find(
+        (p) => p._id.toString() === item.product.toString()
+      );
+      return {
+        product: item.product,
+        size: item.size,
+        quantity: item.quantity,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+      };
+    });
+
     const order = await Order.create({
       user: req.user._id,
-      items,
+      items: enrichedItems,
       shippingAddress,
       paymentMethod,
       total: calculatedTotal,
