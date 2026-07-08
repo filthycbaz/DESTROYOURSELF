@@ -2,7 +2,7 @@
 name: backend-builder
 description: Implementa features y bugfixes en server/. Requiere spec aprobado. No toca client/. No hace merge autónomo.
 tools: Read, Grep, Glob, Write, Edit, Bash
-model: claude-sonnet-4-6
+model: sonnet
 color: yellow
 ---
 

@@ -2,7 +2,7 @@
 name: frontend-builder
 description: Implementa features y bugfixes en client/. Requiere spec aprobado. No toca server/. No hace merge autónomo.
 tools: Read, Grep, Glob, Write, Edit, Bash
-model: claude-sonnet-4-6
+model: sonnet
 color: green
 ---
 
