@@ -25,7 +25,9 @@ describe("GET /api/categories", () => {
 
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: "Tops", slug: "tops" })])
+    );
   });
 
   it("I-CAT-02 — no devuelve categorías inactivas", async () => {

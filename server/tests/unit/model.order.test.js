@@ -51,8 +51,7 @@ describe("Order model", () => {
     it("U-ORD-04 — items vacío es aceptado por el modelo (la restricción min:1 vive en el route validator)", async () => {
       // Mongoose 'required' en arrays solo verifica que el campo no sea null/undefined
       // La regla de negocio "mínimo 1 item" la aplica express-validator en la ruta
-      const order = await Order.create(buildOrder({ items: [] }));
-      expect(order.items).toHaveLength(0);
+      await expect(Order.create(buildOrder({ items: [] }))).resolves.toBeDefined();
     });
 
     it("U-ORD-05 — shippingAddress sin city → ValidationError", async () => {

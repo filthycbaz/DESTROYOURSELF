@@ -1,25 +1,10 @@
-# Testing — DestroyYourself
+# Testing — DestroyYourself (referencia detallada)
 
-Estrategia de pruebas del proyecto: unitarias/integración de backend (Vitest), unitarias de
-componentes de frontend (Jest + React Testing Library, vía `react-scripts test`) y end-to-end
-(Cypress). Este documento describe cómo está montada la suite, cómo ejecutarla, y las
-limitaciones/defectos reales descubiertos al construirla.
-
----
-
-## 1. Estrategia general
-
-| Nivel | Qué prueba | Herramienta | Dónde |
-|---|---|---|---|
-| Unitaria (backend) | Modelos Mongoose, middlewares, en aislamiento | Vitest | `server/tests/unit/` |
-| Integración (backend) | Rutas Express completas contra una DB real en memoria | Vitest + supertest + mongodb-memory-server | `server/tests/integration/` |
-| Unitaria/componente (frontend) | Comportamiento observable de páginas/componentes React, con la API interceptada | Jest (`react-scripts test`) + React Testing Library + MSW | `client/src/**/*.test.jsx` |
-| End-to-end (E2E) | Flujos completos en un navegador real contra la app + API reales | Cypress | `client/cypress/e2e/` |
-
-**Diferencia entre los niveles:** unitario prueba una función/modelo aislado; integración de
-backend prueba una ruta HTTP completa contra Mongo real (sin mockear Mongoose); componente de
-frontend renderiza una página React real con la API mockeada (MSW), sin navegador; E2E maneja un
-navegador real contra el cliente y el servidor real corriendo, sin mockear nada de la app.
+> **Este archivo es la referencia técnica detallada de la infraestructura de testing.** La
+> estrategia integral (pirámide, mapa funcional, alcance), la matriz de trazabilidad, la
+> estrategia de datos, cómo correr todo, y los issues conocidos viven ahora en
+> [`docs/testing/`](testing/strategy.md) — empezar ahí. Este archivo se mantiene por su detalle de
+> infraestructura (§9) y la tabla de `data-testid` (§10), que no están duplicados en otro lado.
 
 ---
 
@@ -97,84 +82,16 @@ o con un `client/cypress.env.json` (gitignorado).
 
 ## 5. Cómo ejecutar
 
-```bash
-# Backend — unitarias + integración (Vitest, mongodb-memory-server, no requiere Atlas)
-cd server
-npm test                 # todo
-npm run test:unit
-npm run test:int
-npm run test:coverage
-
-# Frontend — componentes (Jest de CRA, MSW mockea la API, no requiere backend corriendo)
-cd client
-npm run test:run         # una sola corrida, sin watch
-npm run test:coverage
-
-# Cypress — requiere client (puerto 3000) y server (puerto 3001) corriendo
-cd client
-npm run cypress:open     # modo interactivo
-npm run cypress:run      # headless
-npm run test:e2e:headed  # headless con navegador visible
-```
-
-### Levantar el entorno para Cypress
-
-**Opción A — contra Atlas real** (requiere `server/.env` configurado):
-```bash
-# terminal 1
-cd server && npm run dev
-# terminal 2
-cd client && npm start
-# terminal 3
-cd client && npm run cypress:run
-```
-
-**Opción B — sin Atlas, con Mongo efímero** (la que se usó para verificar esta suite):
-```bash
-# terminal 1 — API + Mongo en memoria + seed automático
-cd server && npm run e2e:server
-# terminal 2
-cd client && npm start
-# terminal 3
-cd client && npm run cypress:run
-```
-
-`server/scripts/e2e-server.mjs` levanta un `mongodb-memory-server`, corre `seed.js` contra él, y
-arranca `server.js` apuntando ahí — nunca toca Atlas. Al terminar (Ctrl+C) destruye la instancia.
-Es la opción recomendada para CI (ver §13).
+Ver [`docs/testing/running-tests.md`](testing/running-tests.md) para todos los comandos
+(backend, frontend, y las dos formas de levantar el entorno de Cypress).
 
 ---
 
 ## 6. Datos de prueba
 
-- **Registro**: cada test genera un correo único con `uniqueTestUser()` (`cypress/utils/testData.js`),
-  usando `Date.now()` — nunca una cuenta fija, así corridas repetidas no colisionan.
-- **Login / checkout**: usan el usuario ya sembrado por `server/seed.js`
-  (`seb@destroy.com` / `password123`), vía `cy.loginByApi()`.
-- **Productos**: `cypress/fixtures/products.json` referencia un producto sembrado por nombre
-  (`SUETER NEWSHOP TINTO`), no por `_id` — los ids son generados por Mongo en cada seed y no son
-  estables entre entornos. `cy.addProductToCart()` resuelve el `_id` real vía la API antes de
-  navegar.
-
-### Limitaciones de limpieza de datos
-
-El backend **no expone** endpoints para borrar usuarios ni órdenes (solo
-`POST /register`, `POST /login`, `GET /me` en auth; nada de `DELETE` de usuario). Por eso:
-
-- Los usuarios creados por `register.cy.js` **no se limpian** — quedan en la base. Con correos
-  únicos por timestamp esto no genera colisiones, pero sí acumula filas con el tiempo.
-- Los tests de checkout reutilizan el mismo usuario sembrado (`seb@destroy.com`) y **vacían su
-  carrito con `cy.clearCartByApi()`** en cada `beforeEach` (`DELETE /api/cart`, ese sí existe) para
-  que los tests sean independientes entre sí.
-- El **stock es finito y real**: `SUETER NEWSHOP TINTO` se siembra con `stock: 5`. La suite de
-  checkout usa `quantity: 1` por orden creada precisamente para no agotarlo al correr todos los
-  tests de una corrida (3 órdenes reales × 1 unidad). Si se corre el spec de checkout muchas veces
-  seguidas contra la **misma** instancia de Mongo sin re-sembrar, el stock se agota y
-  `POST /orders` empieza a devolver 400 legítimamente. La forma correcta de evitar esto es
-  levantar un Mongo efímero nuevo por corrida (que es lo que hace `npm run e2e:server`, y lo que
-  hará cualquier pipeline de CI que arranque el harness desde cero).
-- No hay tarea de Cypress para "reset" del backend porque el backend no ofrece esa superficie.
-  La opción más segura disponible es la que se usa: Mongo efímero + `seed.js` en cada arranque.
+Ver [`docs/testing/test-data.md`](testing/test-data.md) para la estrategia completa (factories de
+backend, fixtures/MSW de frontend, datos fijos vs. generados en Cypress, y las limitaciones reales
+de limpieza — el backend no expone endpoints para borrar usuarios ni órdenes).
 
 ---
 
@@ -306,33 +223,17 @@ que no existen en la app real.
 
 ---
 
-## 11. Recomendaciones para CI/CD
+## 11. CI/CD
 
-No existía pipeline de CI antes de esta tarea. Se agregó `.github/workflows/ci.yml` con:
-
-1. Instalación de dependencias (`server/` y `client/`, con cache de npm).
-2. Lint del cliente (`react-scripts` corre eslint como parte del build; no hay un script de lint
-   dedicado en ninguno de los dos `package.json`).
-3. Unitarias de backend (`npm test` en `server/`, con cobertura).
-4. Unitarias de frontend (`npm run test:run` en `client/`, con cobertura).
-5. Build de producción del cliente (`npm run build`).
-6. Arranque del backend contra Mongo efímero (`npm run e2e:server`, en background) + arranque del
-   cliente + Cypress headless (`npm run test:e2e:ci`... en la práctica, dado que ambos servidores
-   están en proyectos npm separados, el workflow arranca el backend efímero como un paso propio en
-   background y usa `start-server-and-test` solo para esperar al cliente).
-7. Subida de videos/screenshots de Cypress como artifact **solo si falla** algún test.
-
-El pipeline falla si falla cualquier paso — no se usa `|| true` en ningún lado.
+`.github/workflows/ci.yml` — ver [`docs/testing/known-issues.md`](testing/known-issues.md) §3
+para el estado real del pipeline (bloqueado por facturación de GitHub Actions al momento de la
+última auditoría) y [`docs/testing/strategy.md`](testing/strategy.md) §4 para el detalle de qué
+corre cada job.
 
 ---
 
-## 12. Cobertura obtenida (última corrida real, ver §14 del reporte de la tarea)
+## 12. Cobertura obtenida
 
-```
-Backend    — Statements 90.09% | Branches 68.62% | Functions 100% | Lines 90.09%
-Frontend   — Statements 72.93% | Branches 61.70% | Functions 71.42% | Lines 73.86%
-```
-
-La cobertura de frontend no incluye `OrdersPage`/`OrderDetailPage` (fuera del alcance pedido:
-autenticación, productos, carrito, checkout) ni `src/index.js`/`reportWebVitals.js` (boilerplate
-de CRA sin lógica propia).
+Cifras actualizadas y matriz completa en [`docs/testing/test-matrix.md`](testing/test-matrix.md).
+`OrdersPage`/`OrderDetailPage` ya tienen cobertura de frontend (cerrado en la auditoría más
+reciente, ver `known-issues.md` §2).

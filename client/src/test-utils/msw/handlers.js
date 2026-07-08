@@ -46,6 +46,18 @@ export const mockUser = {
   isActive: true,
 };
 
+export const mockOrder = {
+  _id: "order-abc12345",
+  items: [
+    { _id: "item-1", name: mockProduct.name, image: mockProduct.image, price: 350, size: "M", quantity: 2 },
+  ],
+  total: 700,
+  status: "pending",
+  paymentMethod: "tarjeta",
+  shippingAddress: { street: "Av. Reforma 1", city: "CDMX", state: "CDMX", zip: "01000" },
+  createdAt: "2026-07-01T12:00:00.000Z",
+};
+
 export const handlers = [
   http.get(`${API_URL}/products`, () => {
     return HttpResponse.json({
@@ -117,5 +129,12 @@ export const handlers = [
 
   http.get(`${API_URL}/orders/me`, () => {
     return HttpResponse.json([]);
+  }),
+
+  http.get(`${API_URL}/orders/:id`, ({ params }) => {
+    if (params.id !== mockOrder._id) {
+      return HttpResponse.json({ message: "Orden no encontrada" }, { status: 404 });
+    }
+    return HttpResponse.json(mockOrder);
   }),
 ];

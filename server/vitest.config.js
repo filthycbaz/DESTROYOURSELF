@@ -24,5 +24,9 @@ export default defineConfig({
     },
     // Aislamiento: cada suite arranca con BD limpia
     sequence: { concurrent: false },
+    // Reporter JUnit nativo de Vitest (sin dependencia nueva) — se publica como
+    // artefacto en CI para inspección de resultados fuera del log de la corrida.
+    reporters: ["default", "junit"],
+    outputFile: { junit: "./test-results/junit.xml" },
   },
 });
