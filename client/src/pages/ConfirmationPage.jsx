@@ -24,7 +24,7 @@ export default function ConfirmationPage() {
   const { _id, items, total } = order;
 
   return (
-    <div className="confirmation-container">
+    <div className="confirmation-container" data-testid="order-success">
       <div className="confirmation-box">
         <h1 className="confirmation-title">¡Compra exitosa!</h1>
 
@@ -35,7 +35,7 @@ export default function ConfirmationPage() {
         )}
 
         <p className="confirmation-order">
-          Número de orden: <strong>{_id}</strong>
+          Número de orden: <strong data-testid="order-number">{_id}</strong>
         </p>
 
         <h3>Resumen de tu orden:</h3>

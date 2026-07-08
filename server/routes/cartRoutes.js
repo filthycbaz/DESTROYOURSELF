@@ -9,7 +9,7 @@ router.use(protect); // todos los endpoints requieren auth
 router.get("/", getCart);
 router.post("/", addItem);
 router.put("/:itemId", updateItem);
-router.delete("/:itemId", removeItem);
 router.delete("/", clearCart);
+router.delete("/:itemId", removeItem);
 
 export default router;

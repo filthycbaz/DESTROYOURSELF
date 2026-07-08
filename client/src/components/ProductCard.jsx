@@ -1,11 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "../context/AppContext"; 
 import "./ProductCard.css";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
-  const { addToCart } = useApp(); 
 
   const productId = product._id ?? product.id;
 
@@ -19,7 +17,7 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div onClick={handleClick} className="product-card">
+    <div onClick={handleClick} className="product-card" data-testid={`product-card-${productId}`}>
       <div className="product-card-image-container">
         <img
           src={product.image}
@@ -41,10 +39,11 @@ const ProductCard = ({ product }) => {
           ${product.price} MXN
         </div>
 
-        {/* 🔹 Botón para agregar al carrito */}
+        {/* Nota: este botón navega al detalle, no agrega al carrito directamente (ver docs/testing.md, defecto DEF-01) */}
         <button
           className="product-card-add-button"
           onClick={handleAddToCart}
+          data-testid={`product-card-add-button-${productId}`}
         >
           Agregar al carrito
         </button>

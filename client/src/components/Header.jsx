@@ -40,15 +40,19 @@ const Header = () => {
       )}
 
       <div className="header-content">
-        <h1 className="header-title">自分を破壊する</h1>
+        <img
+          src="https://res.cloudinary.com/dus3ayd1j/image/upload/v1782429937/destroyurself_transparent_pgnvso.png"
+          alt="DestroyYourself"
+          className="header-title"
+        />
 
         <nav className="header-nav">
           <Link to="/" className="header-nav-link">TIENDA</Link>
 
-          <Link to="/cart" className="header-nav-link">
+          <Link to="/cart" className="header-nav-link" data-testid="header-cart-link">
             <ShoppingCart size={20} />
             {cartItemsCount > 0 && (
-              <span className="header-cart-badge">{cartItemsCount}</span>
+              <span className="header-cart-badge" data-testid="cart-count">{cartItemsCount}</span>
             )}
           </Link>
 

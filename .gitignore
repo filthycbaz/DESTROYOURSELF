@@ -1,15 +1,18 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+#
+# Unanchored so this also covers client/node_modules and server/node_modules
+# in this monorepo layout (a leading "/" would only match the repo root).
 
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.js
 
-# testing
-/coverage
+# testing / coverage
+coverage/
 
-# production
-/build
+# production builds
+build/
 
 # misc
 .DS_Store
@@ -25,3 +28,9 @@ yarn-error.log*
 
 # Personal Claude Code settings — .claude/settings.json is the versioned, team-wide one
 .claude/settings.local.json
+
+# Cypress artifacts and local env overrides
+client/cypress/videos/
+client/cypress/screenshots/
+client/cypress/downloads/
+client/cypress.env.json
