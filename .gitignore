@@ -26,6 +26,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Personal Claude Code settings — .claude/settings.json is the versioned, team-wide one
+.claude/settings.local.json
+
 # Cypress artifacts and local env overrides
 client/cypress/videos/
 client/cypress/screenshots/
