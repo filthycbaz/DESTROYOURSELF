@@ -121,7 +121,7 @@ describe("GET /api/orders/me", () => {
   it("I-ORD-08 — lista órdenes del usuario autenticado", async () => {
     const { userToken, productId } = await setup();
 
-    await request(app)
+    const created = await request(app)
       .post(base)
       .set("Authorization", `Bearer ${userToken}`)
       .send(buildOrderBody(productId));
@@ -132,7 +132,11 @@ describe("GET /api/orders/me", () => {
 
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ _id: created.body._id, paymentMethod: "efectivo" }),
+      ])
+    );
   });
 });
 

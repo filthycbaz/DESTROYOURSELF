@@ -23,6 +23,15 @@ jobs:
       - name: Tests con cobertura
         working-directory: server
         run: npm run test:coverage
+      - name: Publicar reporte de cobertura y JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: |
+            server/coverage
+            server/test-results
+          retention-days: 14
 
   frontend-unit-tests:
     name: Frontend — unitarias de componentes
@@ -40,6 +49,13 @@ jobs:
       - name: Tests con cobertura
         working-directory: client
         run: npm run test:coverage
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: client/coverage
+          retention-days: 14
 
   frontend-build:
     name: Frontend — build de producción

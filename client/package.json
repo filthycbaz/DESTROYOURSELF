@@ -41,7 +41,22 @@
     },
     "transformIgnorePatterns": [
       "node_modules/(?!(msw|@mswjs|@bundled-es-modules|until-async|@open-draft|outvariant|strict-event-emitter|is-node-process|headers-polyfill|statuses)/)"
-    ]
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/index.js",
+      "!src/reportWebVitals.js",
+      "!src/data/**",
+      "!src/test-utils/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 70,
+        "branches": 60,
+        "functions": 65,
+        "lines": 70
+      }
+    }
   },
   "browserslist": {
     "production": [

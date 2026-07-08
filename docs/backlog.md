@@ -1,6 +1,6 @@
 # Backlog del Proyecto — DestroyYourself
 
-**Última actualización:** 2026-06-23
+**Última actualización:** 2026-07-08
 **Baseline activo:** pendiente de declarar (ver `.agents/workflows/ssdlc.md` FASE 10.5)
 
 ---
@@ -33,9 +33,8 @@
 | US-008 | feature | Panel de administración: gestión de productos (CRUD) | BACKLOG | — |
 | US-009 | feature | Gestión de stock en panel de admin | BACKLOG | — |
 | US-010 | feature | Actualización de estado de órdenes por admin | BACKLOG | — |
-| TECH-003 | feature | Tests de integración para orderController | BACKLOG | — |
-| TECH-004 | feature | Tests de integración para cartController | BACKLOG | — |
-| TECH-005 | feature | Tests de componentes para CheckoutPage y CartPage | BACKLOG | — |
+| TECH-006 | feature | Tests de frontend para el flujo autenticado de sincronización de carrito (`AppContext.syncCartOnLogin`) | BACKLOG | — |
+| TECH-007 | infra | Resolver bloqueo de facturación de GitHub Actions (CI no corre en el remoto) | BACKLOG | — |
 
 ## Baja prioridad / largo plazo
 
@@ -43,7 +42,6 @@
 |----|------|-------------|--------|------|
 | US-011 | feature | Recuperación de contraseña por email | BACKLOG | — |
 | US-012 | feature | Integración con pasarela de pago real | BACKLOG | — |
-| INFRA-001 | infra | Pipeline de CI/CD (GitHub Actions) | BACKLOG | — |
 | INFRA-002 | infra | Configuración de entorno de staging | BACKLOG | — |
 
 ---
@@ -59,6 +57,10 @@
 | US-005 | feature | Checkout con validación de stock y cálculo de total en servidor | — |
 | US-006 | feature | Historial de órdenes del usuario (/orders) | — |
 | US-007 | feature | Detalle de orden (/orders/:id) | — |
+| TECH-003 | feature | Tests de integración para orderController | — |
+| TECH-004 | feature | Tests de integración para cartController | — |
+| TECH-005 | feature | Tests de componentes para CheckoutPage y CartPage | — |
+| INFRA-001 | infra | Pipeline de CI/CD (GitHub Actions) | — |
 
 ---
 
