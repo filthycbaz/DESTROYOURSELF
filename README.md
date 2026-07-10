@@ -29,12 +29,15 @@ cd server
 npm install
 ```
 
-Crea un archivo `.env` en `/server` con tus variables:
+Crea un archivo `.env` en `/server` con tus variables (plantilla completa en
+[`server/.env.example`](server/.env.example)):
 
 ```env
 PORT=3001
 MONGO_URI=mongodb://localhost:27017/destroyourself
 JWT_SECRET=tu_secreto
+FRONTEND_URL=http://localhost:3000
+CORS_ALLOWED_ORIGINS=http://localhost:3000
 ```
 
 Luego levanta en modo desarrollo:
@@ -57,7 +60,20 @@ npm install
 npm start
 ```
 
+Ya existe `client/.env.development` con `REACT_APP_API_URL=http://localhost:3001/api`
+(plantilla en [`client/.env.example`](client/.env.example)).
+
 La app corre en `http://localhost:3000`.
+
+---
+
+## Variables de entorno y despliegue
+
+Referencia completa de todas las variables (backend y frontend), validaciones y
+configuración de CORS: [`docs/environment-variables.md`](docs/environment-variables.md).
+
+Guía paso a paso para desplegar en Render (Web Service + Static Site):
+[`docs/render-deployment.md`](docs/render-deployment.md).
 
 ---
 

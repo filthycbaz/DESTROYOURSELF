@@ -2,18 +2,32 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
+import { env } from "./config/env.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 
-dotenv.config();
-
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3000" }));
+if (env.isProduction) {
+  // Render (y otros proxies inversos) terminan TLS antes del proceso Node.
+  // Sin esto, Express no confía en X-Forwarded-* (IP, protocolo) del proxy.
+  app.set("trust proxy", 1);
+}
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || env.corsAllowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origen no permitido por CORS: ${origin}`));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -36,6 +50,10 @@ app.use((err, req, res, next) => {
   // JWT errors → 401
   if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
     return res.status(401).json({ message: "Token inválido o expirado" });
+  }
+  // CORS rechazado → 403
+  if (err.message?.startsWith("Origen no permitido por CORS")) {
+    return res.status(403).json({ message: err.message });
   }
 
   console.error(err.stack);
