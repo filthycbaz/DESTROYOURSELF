@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 
@@ -23,6 +23,8 @@ const ProductCard = ({ product }) => {
           src={product.image}
           alt={product.name}
           className="product-card-image"
+          loading="lazy"
+          decoding="async"
         />
       </div>
 
@@ -52,4 +54,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

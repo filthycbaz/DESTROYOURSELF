@@ -134,6 +134,8 @@ export default function OrderDetailPage() {
               src={item.image}
               alt={item.name}
               style={{ width: "64px", height: "64px", objectFit: "cover", flexShrink: 0 }}
+              loading="lazy"
+              decoding="async"
             />
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: "monospace", fontWeight: 700, marginBottom: "4px" }}>

@@ -13,6 +13,8 @@ const CartItem = ({ item }) => {
         src={item.image}
         alt={item.name}
         className="cart-item-image"
+        loading="lazy"
+        decoding="async"
       />
 
       <div className="cart-item-info">

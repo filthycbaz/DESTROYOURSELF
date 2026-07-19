@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "./AuthContext";
 import { getAuthHeader } from "../services/authService";
 import { API_URL } from "../config/api";
@@ -51,15 +51,15 @@ export const AppProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
 
-  const fetchServerCart = async () => {
+  const fetchServerCart = useCallback(async () => {
     const res = await fetch(`${API_URL}/cart`, { headers: getAuthHeader() });
     if (!res.ok) return [];
     const data = await res.json();
     return (data.items || []).map(normalizeItem);
-  };
+  }, []);
 
   // On login: merge any local cart items into the server cart, then load from server
-  const syncCartOnLogin = async () => {
+  const syncCartOnLogin = useCallback(async () => {
     try {
       const localRaw = localStorage.getItem("cartData");
       const localItems = localRaw ? JSON.parse(localRaw) : [];
@@ -82,88 +82,97 @@ export const AppProvider = ({ children }) => {
     } catch {
       // Keep local cart if sync fails; do not clear it
     }
-  };
+  }, [fetchServerCart]);
 
-  const addToCart = async (product, size) => {
-    if (auth) {
-      try {
-        const res = await fetch(`${API_URL}/cart`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", ...getAuthHeader() },
-          body: JSON.stringify({ product: product._id, size, quantity: 1 }),
-        });
-        const data = await res.json();
-        setCart((data.items || []).map(normalizeItem));
-      } catch {
-        // Silently fail — user sees no cart update
-      }
-    } else {
-      const entry = { ...product, size };
-      setCart((prev) => {
-        const already = prev.find((i) => localItemKey(i) === localItemKey(entry));
-        if (already) {
-          return prev.map((i) =>
-            localItemKey(i) === localItemKey(entry)
-              ? { ...i, quantity: i.quantity + 1 }
-              : i
-          );
+  const addToCart = useCallback(
+    async (product, size) => {
+      if (auth) {
+        try {
+          const res = await fetch(`${API_URL}/cart`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...getAuthHeader() },
+            body: JSON.stringify({ product: product._id, size, quantity: 1 }),
+          });
+          const data = await res.json();
+          setCart((data.items || []).map(normalizeItem));
+        } catch {
+          // Silently fail — user sees no cart update
         }
-        return [...prev, { ...entry, quantity: 1 }];
-      });
-    }
-  };
-
-  const updateQuantity = async (id, size, qty) => {
-    if (qty < 1) return;
-    if (auth) {
-      try {
-        const target = cart.find(
-          (i) => (i._id?.toString() ?? i.id?.toString()) === id?.toString() && i.size === size
-        );
-        if (!target?.cartItemId) return;
-        const res = await fetch(`${API_URL}/cart/${target.cartItemId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", ...getAuthHeader() },
-          body: JSON.stringify({ quantity: qty }),
+      } else {
+        const entry = { ...product, size };
+        setCart((prev) => {
+          const already = prev.find((i) => localItemKey(i) === localItemKey(entry));
+          if (already) {
+            return prev.map((i) =>
+              localItemKey(i) === localItemKey(entry)
+                ? { ...i, quantity: i.quantity + 1 }
+                : i
+            );
+          }
+          return [...prev, { ...entry, quantity: 1 }];
         });
-        const data = await res.json();
-        setCart((data.items || []).map(normalizeItem));
-      } catch {
-        // Silently fail
       }
-    } else {
-      setCart((prev) =>
-        prev.map((i) =>
-          (i._id ?? i.id) === id && i.size === size ? { ...i, quantity: qty } : i
-        )
-      );
-    }
-  };
+    },
+    [auth]
+  );
 
-  const removeFromCart = async (id, size) => {
-    if (auth) {
-      try {
-        const target = cart.find(
-          (i) => (i._id?.toString() ?? i.id?.toString()) === id?.toString() && i.size === size
+  const updateQuantity = useCallback(
+    async (id, size, qty) => {
+      if (qty < 1) return;
+      if (auth) {
+        try {
+          const target = cart.find(
+            (i) => (i._id?.toString() ?? i.id?.toString()) === id?.toString() && i.size === size
+          );
+          if (!target?.cartItemId) return;
+          const res = await fetch(`${API_URL}/cart/${target.cartItemId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", ...getAuthHeader() },
+            body: JSON.stringify({ quantity: qty }),
+          });
+          const data = await res.json();
+          setCart((data.items || []).map(normalizeItem));
+        } catch {
+          // Silently fail
+        }
+      } else {
+        setCart((prev) =>
+          prev.map((i) =>
+            (i._id ?? i.id) === id && i.size === size ? { ...i, quantity: qty } : i
+          )
         );
-        if (!target?.cartItemId) return;
-        const res = await fetch(`${API_URL}/cart/${target.cartItemId}`, {
-          method: "DELETE",
-          headers: getAuthHeader(),
-        });
-        const data = await res.json();
-        setCart((data.items || []).map(normalizeItem));
-      } catch {
-        // Silently fail
       }
-    } else {
-      setCart((prev) =>
-        prev.filter((i) => !((i._id ?? i.id) === id && i.size === size))
-      );
-    }
-  };
+    },
+    [auth, cart]
+  );
 
-  const clearCart = async () => {
+  const removeFromCart = useCallback(
+    async (id, size) => {
+      if (auth) {
+        try {
+          const target = cart.find(
+            (i) => (i._id?.toString() ?? i.id?.toString()) === id?.toString() && i.size === size
+          );
+          if (!target?.cartItemId) return;
+          const res = await fetch(`${API_URL}/cart/${target.cartItemId}`, {
+            method: "DELETE",
+            headers: getAuthHeader(),
+          });
+          const data = await res.json();
+          setCart((data.items || []).map(normalizeItem));
+        } catch {
+          // Silently fail
+        }
+      } else {
+        setCart((prev) =>
+          prev.filter((i) => !((i._id ?? i.id) === id && i.size === size))
+        );
+      }
+    },
+    [auth, cart]
+  );
+
+  const clearCart = useCallback(async () => {
     if (auth) {
       try {
         await fetch(`${API_URL}/cart`, {
@@ -177,13 +186,12 @@ export const AppProvider = ({ children }) => {
       localStorage.removeItem("cartData");
     }
     setCart([]);
-  };
+  }, [auth]);
 
-  return (
-    <AppContext.Provider
-      value={{ cart, addToCart, updateQuantity, removeFromCart, clearCart }}
-    >
-      {children}
-    </AppContext.Provider>
+  const value = useMemo(
+    () => ({ cart, addToCart, updateQuantity, removeFromCart, clearCart }),
+    [cart, addToCart, updateQuantity, removeFromCart, clearCart]
   );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
