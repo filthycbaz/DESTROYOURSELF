@@ -15,8 +15,58 @@ const router = express.Router();
 const ORDER_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 const PAYMENT_METHODS = ["efectivo", "tarjeta", "transferencia"];
 
+/**
+ * @openapi
+ * /orders/all:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Lista todas las órdenes (solo admin)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Todas las órdenes, con user (name, email) e items.product poblados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { $ref: '#/components/schemas/Order' }
+ *       403:
+ *         description: No es admin
+ */
 // Admin — defined before /:id to avoid interception
 router.get("/all", protect, requireAdmin, getAllOrders);
+
+/**
+ * @openapi
+ * /orders/{id}/status:
+ *   patch:
+ *     tags: [Orders]
+ *     summary: Actualiza el estado de una orden (solo admin)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { $ref: '#/components/schemas/OrderStatusUpdateInput' }
+ *     responses:
+ *       200:
+ *         description: Orden actualizada
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Order' }
+ *       404:
+ *         description: Orden no encontrada
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/ErrorResponse' }
+ */
 router.patch(
   "/:id/status",
   protect,
@@ -26,6 +76,34 @@ router.patch(
   updateOrderStatus
 );
 
+/**
+ * @openapi
+ * /orders:
+ *   post:
+ *     tags: [Orders]
+ *     summary: Crea una orden — verifica stock/disponibilidad y calcula el total en el servidor
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { $ref: '#/components/schemas/OrderCreateInput' }
+ *     responses:
+ *       201:
+ *         description: Orden creada (stock decrementado)
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Order' }
+ *       400:
+ *         description: Producto inexistente, no disponible, stock insuficiente o validación fallida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ErrorResponse'
+ *                 - $ref: '#/components/schemas/ValidationErrorResponse'
+ */
 // Authenticated user
 router.post(
   "/",
@@ -47,7 +125,55 @@ router.post(
   createOrder
 );
 
+/**
+ * @openapi
+ * /orders/me:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Lista las órdenes propias del usuario autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Órdenes del usuario, ordenadas por fecha descendente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { $ref: '#/components/schemas/Order' }
+ */
 router.get("/me", protect, getMyOrders);
+
+/**
+ * @openapi
+ * /orders/{id}:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Obtiene el detalle de una orden propia
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Orden encontrada
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Order' }
+ *       403:
+ *         description: La orden no pertenece al usuario autenticado
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/ErrorResponse' }
+ *       404:
+ *         description: Orden no encontrada
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/ErrorResponse' }
+ */
 router.get("/:id", protect, getOrderById);
 
 export default router;

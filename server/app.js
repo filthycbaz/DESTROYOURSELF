@@ -2,7 +2,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import { env } from "./config/env.js";
+import { swaggerSpec } from "./config/swagger.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -29,6 +31,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+if (env.docsEnabled) {
+  app.get("/api-docs.json", (req, res) => res.json(swaggerSpec));
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
