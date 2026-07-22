@@ -1,6 +1,6 @@
 # Backlog del Proyecto — DestroyYourself
 
-**Última actualización:** 2026-07-08
+**Última actualización:** 2026-07-22
 **Baseline activo:** pendiente de declarar (ver `.agents/workflows/ssdlc.md` FASE 10.5)
 
 ---
@@ -43,6 +43,7 @@
 | US-011 | feature | Recuperación de contraseña por email | BACKLOG | — |
 | US-012 | feature | Integración con pasarela de pago real | BACKLOG | — |
 | INFRA-002 | infra | Configuración de entorno de staging | BACKLOG | — |
+| INFRA-003 | infra | Activar auto-deploy en el Web Service de Render (hoy en manual — el merge a `main` no dispara deploy solo, hay que dispararlo a mano desde el dashboard) | BACKLOG | — |
 
 ---
 
@@ -61,6 +62,7 @@
 | TECH-004 | feature | Tests de integración para cartController | — |
 | TECH-005 | feature | Tests de componentes para CheckoutPage y CartPage | — |
 | INFRA-001 | infra | Pipeline de CI/CD (GitHub Actions) | — |
+| TECH-008 | feature | Documentación OpenAPI/Swagger de la API (`/api-docs`, gateado por `ENABLE_DOCS` — oculto en producción por defecto) | [PR #6](https://github.com/filthycbaz/DESTROYOURSELF/pull/6) |
 
 ---
 
