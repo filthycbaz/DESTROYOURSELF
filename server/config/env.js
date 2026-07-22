@@ -45,6 +45,10 @@ if (isProduction && corsAllowedOrigins.length === 0) {
   );
 }
 
+// Swagger UI expone la forma de la API — nunca abierto por defecto en producción.
+// Se puede forzar en producción con ENABLE_DOCS=true (ej. para revisar un staging).
+const docsEnabled = !isProduction || process.env.ENABLE_DOCS === "true";
+
 export const env = {
   NODE_ENV,
   isProduction,
@@ -53,4 +57,5 @@ export const env = {
   JWT_SECRET: process.env.JWT_SECRET,
   FRONTEND_URL,
   corsAllowedOrigins,
+  docsEnabled,
 };
