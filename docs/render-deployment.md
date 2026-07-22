@@ -63,7 +63,7 @@ reconstruye automáticamente solo por cambiar una env var de un Static Site.
 | Entorno | Frontend | Backend |
 |---------|----------|---------|
 | Local | `http://localhost:3000` | `http://localhost:3001` |
-| Render | `https://<static-site>.onrender.com` | `https://<web-service>.onrender.com` |
+| Render | `https://destroyourself-1.onrender.com` | `https://destroyourself.onrender.com` |
 
 ## Verificación post-deploy
 
@@ -75,9 +75,10 @@ reconstruye automáticamente solo por cambiar una env var de un Static Site.
 - Login/registro/carrito/checkout funcionan de punta a punta contra el backend
   desplegado (ver `docs/data-flow.md` para el flujo completo).
 
-## Pendiente real (no resoluble desde el repo)
+## Servicios ya desplegados
 
-Las URLs finales (`https://*.onrender.com`) las asigna Render al crear cada
-servicio y no se conocen de antemano. `FRONTEND_URL`, `CORS_ALLOWED_ORIGINS` y
-`REACT_APP_API_URL` deben completarse manualmente con esos valores reales en el
-dashboard de Render siguiendo el orden de la sección anterior.
+Los dos servicios ya existen en Render con las URLs de la tabla anterior.
+Verificado (2026-07-21): la home de `destroyourself-1.onrender.com` carga
+productos desde `destroyourself.onrender.com/api` sin errores de CORS en
+consola, así que `FRONTEND_URL`, `CORS_ALLOWED_ORIGINS` y `REACT_APP_API_URL`
+ya están configuradas correctamente entre ambos servicios.

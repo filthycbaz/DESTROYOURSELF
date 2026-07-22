@@ -1,7 +1,7 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import { env } from "./env.js";
 
-const renderUrl = process.env.RENDER_EXTERNAL_URL || "https://<web-service>.onrender.com";
+const renderUrl = process.env.RENDER_EXTERNAL_URL || "https://destroyourself.onrender.com";
 
 const definition = {
   openapi: "3.0.3",
