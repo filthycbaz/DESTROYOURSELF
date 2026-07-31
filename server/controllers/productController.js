@@ -100,9 +100,13 @@ const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
+    // req.body es undefined si el request no llega con Content-Type: application/json
+    // (express.json() no lo parsea) — hasOwn también evita mirar la cadena de
+    // prototipos, a diferencia de `field in body`.
+    const body = req.body ?? {};
     const updates = {};
     for (const field of UPDATABLE_PRODUCT_FIELDS) {
-      if (field in req.body) updates[field] = req.body[field];
+      if (Object.hasOwn(body, field)) updates[field] = body[field];
     }
 
     const product = await Product.findByIdAndUpdate(id, updates, {
