@@ -127,6 +127,42 @@ describe("PUT /api/products/:id", () => {
 
     expect(res.status).toBe(403);
   });
+
+  it("I-PRD-15 — campos fuera de la whitelist se ignoran (mass assignment)", async () => {
+    const { adminToken, productId } = await setup();
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ price: 500, hacked: true, _id: "000000000000000000000000" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.price).toBe(500);
+    expect(res.body).not.toHaveProperty("hacked");
+    expect(res.body._id).toBe(productId);
+  });
+
+  it("I-PRD-16 — payload con __proto__ no contamina el objeto de update", async () => {
+    const { adminToken, productId } = await setup();
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send(JSON.parse('{"price": 300, "__proto__": {"polluted": "yes"}}'));
+
+    expect(res.status).toBe(200);
+    expect(res.body.price).toBe(300);
+    expect({}.polluted).toBeUndefined();
+  });
+
+  it("I-PRD-17 — permite actualizar isAvailable", async () => {
+    const { adminToken, productId } = await setup();
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ isAvailable: false });
+
+    expect(res.status).toBe(200);
+    expect(res.body.isAvailable).toBe(false);
+  });
 });
 
 describe("DELETE /api/products/:id", () => {
