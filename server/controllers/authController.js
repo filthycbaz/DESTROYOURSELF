@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import logSecurityEvent from "../config/securityLog.js";
 
 const generateToken = (user) =>
   jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -28,11 +29,13 @@ const login = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) {
+      logSecurityEvent("auth.login_failed", { email, reason: "no_user", ip: req.ip });
       return res.status(401).json({ message: "Email o contraseña incorrectos" });
     }
 
     const isValid = await user.comparePassword(password);
     if (!isValid) {
+      logSecurityEvent("auth.login_failed", { email, reason: "bad_password", ip: req.ip });
       return res.status(401).json({ message: "Email o contraseña incorrectos" });
     }
 

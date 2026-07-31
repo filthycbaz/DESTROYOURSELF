@@ -6,6 +6,14 @@ export default defineConfig({
     environment: "node",
     setupFiles: ["./tests/setup.js"],
     include: ["tests/**/*.test.js"],
+    // El rate limiter de /auth usa este techo en vez del de producción (10) —
+    // una corrida completa de la suite hace bastantes más de 10 requests
+    // combinadas a /register+/login. Se inyecta antes del import de app.js
+    // (a diferencia de setup.js, que corre en beforeAll — demasiado tarde
+    // para el `createAuthLimiter()` que se instancia al cargar authRoutes.js).
+    env: {
+      AUTH_RATE_LIMIT_MAX: "1000",
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov", "html"],

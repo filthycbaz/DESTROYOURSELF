@@ -127,4 +127,14 @@ describe("requireAdmin middleware", () => {
     expect(next).toHaveBeenCalledTimes(1);
     expect(res.status).not.toHaveBeenCalled();
   });
+
+  it("U-MW-10 — role no admin registra un evento de seguridad (auth.forbidden)", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    req = { user: { _id: "u1", role: "user" }, ip: "127.0.0.1", path: "/api/products" };
+
+    requireAdmin(req, res, next);
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("auth.forbidden"));
+    warnSpy.mockRestore();
+  });
 });

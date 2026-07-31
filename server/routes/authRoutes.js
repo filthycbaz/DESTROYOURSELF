@@ -3,8 +3,12 @@ import { body } from "express-validator";
 import { register, login, getMe } from "../controllers/authController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 import validate from "../middlewares/validate.js";
+import createAuthLimiter from "../middlewares/rateLimit.js";
 
 const router = express.Router();
+
+// Compartido entre /register y /login — mitiga brute-force y credential stuffing.
+const authLimiter = createAuthLimiter();
 
 /**
  * @openapi
@@ -31,9 +35,12 @@ const router = express.Router();
  *               oneOf:
  *                 - $ref: '#/components/schemas/ErrorResponse'
  *                 - $ref: '#/components/schemas/ValidationErrorResponse'
+ *       429:
+ *         description: Demasiados intentos desde este IP, reintentar más tarde
  */
 router.post(
   "/register",
+  authLimiter,
   [
     body("name").trim().notEmpty().withMessage("El nombre es requerido"),
     body("email").isEmail().withMessage("El email no es válido").normalizeEmail(),
@@ -67,9 +74,12 @@ router.post(
  *         content:
  *           application/json:
  *             schema: { $ref: '#/components/schemas/ErrorResponse' }
+ *       429:
+ *         description: Demasiados intentos desde este IP, reintentar más tarde
  */
 router.post(
   "/login",
+  authLimiter,
   [
     body("email").isEmail().withMessage("El email no es válido").normalizeEmail(),
     body("password").notEmpty().withMessage("La contraseña es requerida"),
