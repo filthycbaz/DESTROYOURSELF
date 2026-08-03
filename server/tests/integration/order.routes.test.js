@@ -115,6 +115,35 @@ describe("POST /api/orders", () => {
     const res = await request(app).post(base).send(buildOrderBody(productId));
     expect(res.status).toBe(401);
   });
+
+  it("I-ORD-15 — quantity por encima del máximo (20) → 400", async () => {
+    const { userToken, productId } = await setup();
+    const res = await request(app)
+      .post(base)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        ...buildOrderBody(productId),
+        items: [{ product: productId, size: "M", quantity: 21 }],
+      });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("I-ORD-16 — quantity en el límite (20) es válida", async () => {
+    const { userToken, product, productId } = await setup();
+    product.stock = 25;
+    await product.save();
+
+    const res = await request(app)
+      .post(base)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        ...buildOrderBody(productId),
+        items: [{ product: productId, size: "M", quantity: 20 }],
+      });
+
+    expect(res.status).toBe(201);
+  });
 });
 
 describe("GET /api/orders/me", () => {

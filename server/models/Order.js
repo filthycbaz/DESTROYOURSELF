@@ -51,7 +51,7 @@ const { Schema, model } = mongoose;
  *             properties:
  *               product: { type: string, description: "ObjectId del Product" }
  *               size: { type: string }
- *               quantity: { type: integer, minimum: 1 }
+ *               quantity: { type: integer, minimum: 1, maximum: 20 }
  *         shippingAddress: { $ref: '#/components/schemas/ShippingAddress' }
  *         paymentMethod: { type: string, enum: [efectivo, tarjeta, transferencia] }
  *     OrderStatusUpdateInput:

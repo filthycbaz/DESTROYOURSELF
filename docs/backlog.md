@@ -39,10 +39,11 @@
 | US-010 | feature | Actualización de estado de órdenes por admin | BACKLOG | — |
 | TECH-006 | feature | Tests de frontend para el flujo autenticado de sincronización de carrito (`AppContext.syncCartOnLogin`) | BACKLOG | — |
 | TECH-007 | infra | Resolver bloqueo de facturación de GitHub Actions (CI no corre en el remoto) | BACKLOG | — |
-| SEC-007 | security | Agregar `helmet` para headers de seguridad (auditoría OWASP A02) | BACKLOG | — |
-| SEC-008 | security | Clasificar `CastError` en el error handler global → 400 en vez de 500, sin exponer el mensaje interno de Mongoose (auditoría OWASP A02/A10) | BACKLOG | — |
-| SEC-009 | security | Límite máximo de `quantity` por item + idempotencia en `POST /orders` (auditoría OWASP A06) | BACKLOG | — |
-| SEC-010 | security | Expiración más corta de JWT + mecanismo de revocación — complementa `SEC-001` (auditoría OWASP A07) | BACKLOG | — |
+| SEC-007 | security | Agregar `helmet` para headers de seguridad (auditoría OWASP A02) | IN REVIEW | [PR #9](https://github.com/filthycbaz/DESTROYOURSELF/pull/9) |
+| SEC-008 | security | Clasificar `CastError` en el error handler global → 400 en vez de 500, sin exponer el mensaje interno de Mongoose (auditoría OWASP A02/A10) | IN REVIEW | [PR #9](https://github.com/filthycbaz/DESTROYOURSELF/pull/9) |
+| SEC-009 | security | Límite máximo de `quantity` por item en `POST /orders` (20, defensivo — el stock real ya lo valida `orderController`) (auditoría OWASP A06) | IN REVIEW | [PR #10](https://github.com/filthycbaz/DESTROYOURSELF/pull/10) |
+| SEC-010 | security | Expiración más corta de JWT + mecanismo de revocación — decisión explícita: se deja en BACKLOG hasta diseñarlo junto con `SEC-001` (migrar a httpOnly cookies), son cambios que se pisan si se hacen por separado (auditoría OWASP A07) | BACKLOG | — |
+| SEC-012 | security | Idempotencia en `POST /orders` (evitar órdenes duplicadas por doble-click/retry) — separado de `SEC-009` porque requiere infra nueva (Idempotency-Key + storage, ninguna existe hoy), no es un fix chico (auditoría OWASP A06) | BACKLOG | — |
 
 ## Baja prioridad / largo plazo
 

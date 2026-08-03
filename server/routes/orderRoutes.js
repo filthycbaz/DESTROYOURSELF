@@ -14,6 +14,9 @@ const router = express.Router();
 
 const ORDER_STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 const PAYMENT_METHODS = ["efectivo", "tarjeta", "transferencia"];
+// Tope defensivo por item — el stock real ya lo valida orderController,
+// esto solo evita cantidades absurdas (ej. 999999) mientras haya stock suficiente.
+const MAX_QUANTITY_PER_ITEM = 20;
 
 /**
  * @openapi
@@ -112,7 +115,9 @@ router.post(
     body("items").isArray({ min: 1 }).withMessage("La orden debe tener al menos un producto"),
     body("items.*.product").notEmpty().withMessage("Cada item debe tener un producto"),
     body("items.*.size").notEmpty().withMessage("Cada item debe tener una talla"),
-    body("items.*.quantity").isInt({ min: 1 }).withMessage("La cantidad mínima es 1"),
+    body("items.*.quantity")
+      .isInt({ min: 1, max: MAX_QUANTITY_PER_ITEM })
+      .withMessage(`La cantidad debe ser entre 1 y ${MAX_QUANTITY_PER_ITEM}`),
     body("shippingAddress.street").notEmpty().withMessage("La calle es requerida"),
     body("shippingAddress.city").notEmpty().withMessage("La ciudad es requerida"),
     body("shippingAddress.state").notEmpty().withMessage("El estado es requerido"),
