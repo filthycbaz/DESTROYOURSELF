@@ -78,12 +78,38 @@ const createProduct = async (req, res, next) => {
   }
 };
 
+// Campos editables de Product — nunca pasar req.body crudo a findByIdAndUpdate:
+// evita mass assignment (ej. sobreescribir _id/createdAt) y cierra la ruta hacia
+// el prototype pollution de mongoose en casting de update (GHSA-664h-wqgq-64gw),
+// ya que solo se copian estas claves fijas, nunca las que vengan en el body.
+const UPDATABLE_PRODUCT_FIELDS = [
+  "name",
+  "category",
+  "price",
+  "image",
+  "description",
+  "sizes",
+  "condition",
+  "brand",
+  "stock",
+  "isAvailable",
+];
+
 // UPDATE — solo admin
 const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const product = await Product.findByIdAndUpdate(id, req.body, {
+    // req.body es undefined si el request no llega con Content-Type: application/json
+    // (express.json() no lo parsea) — hasOwn también evita mirar la cadena de
+    // prototipos, a diferencia de `field in body`.
+    const body = req.body ?? {};
+    const updates = {};
+    for (const field of UPDATABLE_PRODUCT_FIELDS) {
+      if (Object.hasOwn(body, field)) updates[field] = body[field];
+    }
+
+    const product = await Product.findByIdAndUpdate(id, updates, {
       new: true,
       runValidators: true,
     });

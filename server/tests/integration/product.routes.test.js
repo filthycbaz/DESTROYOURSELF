@@ -127,6 +127,59 @@ describe("PUT /api/products/:id", () => {
 
     expect(res.status).toBe(403);
   });
+
+  it("I-PRD-15 — campos fuera de la whitelist se ignoran (mass assignment)", async () => {
+    const { adminToken, productId } = await setup();
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ price: 500, hacked: true, _id: "000000000000000000000000" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.price).toBe(500);
+    expect(res.body).not.toHaveProperty("hacked");
+    expect(res.body._id).toBe(productId);
+  });
+
+  it("I-PRD-16 — clave con path tipo __proto__ (vector de GHSA-664h-wqgq-64gw) se ignora", async () => {
+    const { adminToken, productId } = await setup();
+    // Payload con el shape exacto del vector reportado en la CVE de mongoose:
+    // una clave de nivel superior con path prefijado por __proto__. La whitelist
+    // solo copia claves que matchean literalmente uno de los 10 campos fijos,
+    // así que esta nunca llega a construirse en `updates`, sin importar su forma.
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ price: 300, "__proto__.polluted": "yes", "stock.__proto__.x": "hack" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.price).toBe(300);
+    expect(res.body).not.toHaveProperty("__proto__.polluted");
+    expect({}.polluted).toBeUndefined();
+  });
+
+  it("I-PRD-18 — sin Content-Type: application/json (req.body undefined) no rompe, no-op", async () => {
+    const { adminToken, productId } = await setup();
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .unset("Content-Type")
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body._id).toBe(productId);
+  });
+
+  it("I-PRD-17 — permite actualizar isAvailable", async () => {
+    const { adminToken, productId } = await setup();
+    const res = await request(app)
+      .put(`${base}/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ isAvailable: false });
+
+    expect(res.status).toBe(200);
+    expect(res.body.isAvailable).toBe(false);
+  });
 });
 
 describe("DELETE /api/products/:id", () => {
