@@ -2,6 +2,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import { env } from "./config/env.js";
 import { swaggerSpec } from "./config/swagger.js";
@@ -29,6 +30,10 @@ const corsOptions = {
   credentials: true,
 };
 
+// CSP por defecto de helmet bloquea los scripts/estilos inline que usa
+// swagger-ui-express — se desactiva acá; el resto de headers (X-Content-Type-Options,
+// HSTS, etc.) quedan activos. No es una app que renderice HTML propio salvo /api-docs.
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -53,6 +58,12 @@ app.use((err, req, res, next) => {
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || "campo";
     return res.status(400).json({ message: `El ${field} ya está registrado` });
+  }
+  // ID malformado (ej. GET /api/products/no-es-un-id) → 400, no 500.
+  // Sin este branch caía al catch-all de abajo, que filtraba el mensaje
+  // crudo de Mongoose (nombre del modelo, path del schema) en la respuesta.
+  if (err.name === "CastError") {
+    return res.status(400).json({ message: `Id inválido: ${err.value}` });
   }
   // JWT errors → 401
   if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
