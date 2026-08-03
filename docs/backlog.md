@@ -1,6 +1,6 @@
 # Backlog del Proyecto — DestroyYourself
 
-**Última actualización:** 2026-07-22
+**Última actualización:** 2026-08-03
 **Baseline activo:** pendiente de declarar (ver `.agents/workflows/ssdlc.md` FASE 10.5)
 
 ---
@@ -24,7 +24,11 @@
 |----|------|-------------|--------|------|
 | SEC-001 | security | Migrar JWT de localStorage a httpOnly cookies | BACKLOG | — |
 | TECH-001 | refactor | Envolver decremento de stock + Order.create en transacción MongoDB | BACKLOG | — |
-| TECH-002 | feature | Rate limiting en rutas públicas (GET /api/products, POST /api/auth) | BACKLOG | — |
+| TECH-002 | feature | Rate limiting en rutas públicas (GET /api/products, POST /api/auth) — parcialmente cubierto por `SEC-003` (solo /api/auth; GET /api/products sigue sin límite) | BACKLOG | — |
+| SEC-003 | security | Rate limiting en POST /api/auth/login y /register (auditoría OWASP A07) | IN REVIEW | [PR #7](https://github.com/filthycbaz/DESTROYOURSELF/pull/7) |
+| SEC-004 | security | Resolver vulnerabilidades de `npm audit` en dependencias de producción — mongoose, qs, body-parser (auditoría OWASP A03) | IN REVIEW | [PR #8](https://github.com/filthycbaz/DESTROYOURSELF/pull/8) |
+| SEC-005 | security | Whitelist de campos en `productController.updateProduct` — cierra mass assignment y la ruta hacia GHSA-664h-wqgq-64gw (auditoría OWASP A05) | IN REVIEW | [PR #8](https://github.com/filthycbaz/DESTROYOURSELF/pull/8) |
+| SEC-006 | security | Logging de login fallido, token inválido/ausente y accesos admin rechazados (auditoría OWASP A09) | IN REVIEW | [PR #7](https://github.com/filthycbaz/DESTROYOURSELF/pull/7) |
 
 ## Media prioridad
 
@@ -35,6 +39,10 @@
 | US-010 | feature | Actualización de estado de órdenes por admin | BACKLOG | — |
 | TECH-006 | feature | Tests de frontend para el flujo autenticado de sincronización de carrito (`AppContext.syncCartOnLogin`) | BACKLOG | — |
 | TECH-007 | infra | Resolver bloqueo de facturación de GitHub Actions (CI no corre en el remoto) | BACKLOG | — |
+| SEC-007 | security | Agregar `helmet` para headers de seguridad (auditoría OWASP A02) | BACKLOG | — |
+| SEC-008 | security | Clasificar `CastError` en el error handler global → 400 en vez de 500, sin exponer el mensaje interno de Mongoose (auditoría OWASP A02/A10) | BACKLOG | — |
+| SEC-009 | security | Límite máximo de `quantity` por item + idempotencia en `POST /orders` (auditoría OWASP A06) | BACKLOG | — |
+| SEC-010 | security | Expiración más corta de JWT + mecanismo de revocación — complementa `SEC-001` (auditoría OWASP A07) | BACKLOG | — |
 
 ## Baja prioridad / largo plazo
 
@@ -44,6 +52,7 @@
 | US-012 | feature | Integración con pasarela de pago real | BACKLOG | — |
 | INFRA-002 | infra | Configuración de entorno de staging | BACKLOG | — |
 | INFRA-003 | infra | Activar auto-deploy en el Web Service de Render (hoy en manual — el merge a `main` no dispara deploy solo, hay que dispararlo a mano desde el dashboard) | BACKLOG | — |
+| SEC-011 | security | Pinnear GitHub Actions a SHA de commit en vez de tag mayor (auditoría OWASP A08) | BACKLOG | — |
 
 ---
 
@@ -63,6 +72,26 @@
 | TECH-005 | feature | Tests de componentes para CheckoutPage y CartPage | — |
 | INFRA-001 | infra | Pipeline de CI/CD (GitHub Actions) | — |
 | TECH-008 | feature | Documentación OpenAPI/Swagger de la API (`/api-docs`, gateado por `ENABLE_DOCS` — oculto en producción por defecto) | [PR #6](https://github.com/filthycbaz/DESTROYOURSELF/pull/6) |
+| SEC-002 | security | Rotar credencial `admin@destroy.com` en producción (estaba con la password de seed `admin123`, hallazgo Crítico de la auditoría OWASP A07) | — (rotación manual en producción, sin cambio de código — ver `seed.js` para el origen del hallazgo) |
+
+---
+
+## Auditoría OWASP Top 10:2025 (2026-07-30)
+
+Auditoría de solo lectura sobre la API de Express (`server/`) contra las 10 categorías del OWASP Top 10:2025. Los hallazgos quedan trackeados arriba como `SEC-002` a `SEC-011`. Resumen por categoría:
+
+| Categoría | Estado al momento de la auditoría | ID(s) |
+|---|---|---|
+| A01 Broken Access Control | OK | — |
+| A02 Security Misconfiguration | Parcial | `SEC-007`, `SEC-008` |
+| A03 Software Supply Chain | Expuesto | `SEC-004` |
+| A04 Cryptographic Failures | OK (con salvedad) | — |
+| A05 Injection | Expuesto | `SEC-005` |
+| A06 Insecure Design | Parcial | `SEC-009`, `TECH-001` (ya existente) |
+| A07 Authentication Failures | Expuesto (Crítico) | `SEC-002`, `SEC-003`, `SEC-010` |
+| A08 Data Integrity Failures | Parcial | `SEC-011` |
+| A09 Logging & Alerting Failures | Expuesto | `SEC-006` |
+| A10 Mishandling of Exceptional Conditions | Parcial | `SEC-008` |
 
 ---
 
