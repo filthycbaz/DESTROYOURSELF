@@ -21,10 +21,12 @@ if (typeof global.TransformStream === 'undefined') {
 require('@testing-library/jest-dom');
 
 const { server } = require('./test-utils/msw/server');
+const { clearApiCache } = require('./services/apiCache');
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
   server.resetHandlers();
   localStorage.clear();
+  clearApiCache();
 });
 afterAll(() => server.close());

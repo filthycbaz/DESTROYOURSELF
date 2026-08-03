@@ -74,7 +74,13 @@ const ProductDetailPage = () => {
 
       <div className="detail-grid">
         <div className="detail-image-container">
-          <img src={product.image} alt={product.name} className="detail-image" />
+          <img
+            src={product.image}
+            alt={product.name}
+            className="detail-image"
+            decoding="async"
+            fetchPriority="high"
+          />
         </div>
 
         <div>

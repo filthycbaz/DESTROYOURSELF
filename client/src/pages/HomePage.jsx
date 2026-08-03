@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
 import { API_URL } from '../config/api';
+import { fetchJsonCached } from '../services/apiCache';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -13,13 +14,10 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          fetch(`${API_URL}/products?limit=100`),
-          fetch(`${API_URL}/categories`),
+        const [productsData, categoriesData] = await Promise.all([
+          fetchJsonCached(`${API_URL}/products?limit=100`),
+          fetchJsonCached(`${API_URL}/categories`),
         ]);
-
-        const productsData = await productsRes.json();
-        const categoriesData = await categoriesRes.json();
 
         setProducts(productsData.products ?? []);
         setCategories(categoriesData.map((c) => c.slug));
