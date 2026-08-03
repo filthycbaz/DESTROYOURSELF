@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 import app from "../../app.js";
 
@@ -88,6 +88,17 @@ describe("POST /api/auth/login", () => {
       .send({ email: "noexiste@test.com", password: "password123" });
 
     expect(res.status).toBe(401);
+  });
+
+  it("I-AUTH-11 — login fallido registra un evento de seguridad (auth.login_failed)", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await request(app)
+      .post(`${base}/login`)
+      .send({ email: "noexiste@test.com", password: "password123" });
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("auth.login_failed"));
+    warnSpy.mockRestore();
   });
 });
 
