@@ -147,6 +147,29 @@ describe("CheckoutPage", () => {
     expect(screen.getByTestId("checkout-confirm-button")).not.toBeDisabled();
   });
 
+  test("servidor caído al crear la orden muestra un mensaje de conexión, no pantalla blanca", async () => {
+    mockAuthenticatedCartWith([backendCartItem]);
+    server.use(
+      http.post(`${API_URL}/orders`, () => HttpResponse.error())
+    );
+
+    const user = userEvent.setup();
+    renderCheckout();
+
+    await screen.findByTestId("checkout-customer-form");
+    await user.type(screen.getByTestId("checkout-street-input"), "Av. Siempre Viva 742");
+    await user.type(screen.getByTestId("checkout-city-input"), "CDMX");
+    await user.type(screen.getByTestId("checkout-state-input"), "CDMX");
+    await user.type(screen.getByTestId("checkout-zip-input"), "01000");
+    await user.click(screen.getByTestId("checkout-confirm-button"));
+
+    expect(await screen.findByTestId("checkout-error")).toHaveTextContent(
+      /no se pudo conectar con el servidor/i
+    );
+    expect(screen.queryByTestId("order-success")).not.toBeInTheDocument();
+    expect(screen.getByTestId("checkout-confirm-button")).not.toBeDisabled();
+  });
+
   test("el botón de confirmar se deshabilita mientras la orden se procesa (previene doble envío)", async () => {
     mockAuthenticatedCartWith([backendCartItem]);
     server.use(
