@@ -44,4 +44,19 @@ describe("POST /api/logs/client", () => {
     expect(logged.source).toBe("client");
     expect(logged).toHaveProperty("timestamp");
   });
+
+  it("I-LOG-05 — event con tipo equivocado (no string) → 400", async () => {
+    const res = await request(app).post("/api/logs/client").send({ event: 123 });
+    expect(res.status).toBe(400);
+  });
+
+  it("I-LOG-06 — event vacío (\"\") → 400, no se coerciona a client.unknown en silencio", async () => {
+    const res = await request(app).post("/api/logs/client").send({ event: "" });
+    expect(res.status).toBe(400);
+  });
+
+  it("I-LOG-07 — section con tipo equivocado (no string) → 400", async () => {
+    const res = await request(app).post("/api/logs/client").send({ event: "x", section: { nested: true } });
+    expect(res.status).toBe(400);
+  });
 });

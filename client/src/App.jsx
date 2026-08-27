@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorFallback from "./components/ErrorFallback";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -29,55 +30,36 @@ import "./styles/App.css";
    FALLBACKS DE ERROR (por sección)
 ========================= */
 const catalogFallback = (
-  <div style={{ textAlign: "center", padding: "80px 20px" }}>
-    <h1 style={{ fontFamily: "monospace", marginBottom: "16px" }}>NO PUDIMOS CARGAR EL CATÁLOGO</h1>
-    <p style={{ marginBottom: "24px" }}>Ocurrió un error inesperado mostrando los productos.</p>
-    <button
-      onClick={() => window.location.reload()}
-      style={{ background: "#000", color: "#fff", padding: "12px 32px", border: "none", fontFamily: "monospace", fontWeight: 700, cursor: "pointer" }}
-    >
-      RECARGAR
-    </button>
-  </div>
+  <ErrorFallback
+    title="NO PUDIMOS CARGAR EL CATÁLOGO"
+    message="Ocurrió un error inesperado mostrando los productos."
+    actionLabel="RECARGAR"
+  />
 );
 
 const cartFallback = (
-  <div style={{ textAlign: "center", padding: "80px 20px" }}>
-    <h1 style={{ fontFamily: "monospace", marginBottom: "16px" }}>NO PUDIMOS MOSTRAR TU CARRITO</h1>
-    <p style={{ marginBottom: "24px" }}>Tus productos siguen guardados, no se perdieron. Intenta recargar la página.</p>
-    <button
-      onClick={() => window.location.reload()}
-      style={{ background: "#000", color: "#fff", padding: "12px 32px", border: "none", fontFamily: "monospace", fontWeight: 700, cursor: "pointer" }}
-    >
-      RECARGAR
-    </button>
-  </div>
+  <ErrorFallback
+    title="NO PUDIMOS MOSTRAR TU CARRITO"
+    message="Tus productos siguen guardados, no se perdieron. Intenta recargar la página."
+    actionLabel="RECARGAR"
+  />
 );
 
 const globalFallback = (
-  <div style={{ textAlign: "center", padding: "80px 20px" }}>
-    <h1 style={{ fontFamily: "monospace", marginBottom: "16px" }}>ALGO SALIÓ MAL</h1>
-    <p style={{ marginBottom: "24px" }}>Ocurrió un error inesperado. Intenta recargar la página.</p>
-    <button
-      onClick={() => window.location.reload()}
-      style={{ background: "#000", color: "#fff", padding: "12px 32px", border: "none", fontFamily: "monospace", fontWeight: 700, cursor: "pointer" }}
-    >
-      RECARGAR
-    </button>
-  </div>
+  <ErrorFallback
+    title="ALGO SALIÓ MAL"
+    message="Ocurrió un error inesperado. Intenta recargar la página."
+    actionLabel="RECARGAR"
+  />
 );
 
 const checkoutFallback = (
-  <div style={{ textAlign: "center", padding: "80px 20px" }}>
-    <h1 style={{ fontFamily: "monospace", marginBottom: "16px" }}>ERROR AL PROCESAR EL CHECKOUT</h1>
-    <p style={{ marginBottom: "24px" }}>No se realizó ningún cargo. Volvé a tu carrito e intenta de nuevo.</p>
-    <a
-      href="/cart"
-      style={{ background: "#000", color: "#fff", padding: "12px 32px", textDecoration: "none", fontFamily: "monospace", fontWeight: 700 }}
-    >
-      VOLVER AL CARRITO
-    </a>
-  </div>
+  <ErrorFallback
+    title="ERROR AL PROCESAR EL CHECKOUT"
+    message="No se realizó ningún cargo. Volvé a tu carrito e intenta de nuevo."
+    actionLabel="VOLVER AL CARRITO"
+    actionHref="/cart"
+  />
 );
 
 /* =========================

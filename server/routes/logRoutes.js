@@ -1,6 +1,8 @@
 import express from "express";
+import { body } from "express-validator";
 import logSecurityEvent from "../config/securityLog.js";
 import createAuthLimiter from "../middlewares/rateLimit.js";
+import validate from "../middlewares/validate.js";
 
 const router = express.Router();
 
@@ -10,10 +12,21 @@ const router = express.Router();
 // siendo público y hay que evitar que alguien lo use para floodear logs.
 const logLimiter = createAuthLimiter({ max: Number(process.env.LOG_RATE_LIMIT_MAX) || 30 });
 
-// Trunca para que un stack trace gigante o un string manipulado no infle el
-// log sin límite — no rechazamos el request, solo recortamos lo que se guarda.
+// Trunca para que un stack trace gigante no infle el log sin límite — el tipo
+// ya lo garantiza express-validator, esto solo recorta el largo.
 const truncate = (value, max = 2000) =>
   typeof value === "string" ? value.slice(0, max) : undefined;
+
+// Todos opcionales (un log nunca debe rechazarse por venir incompleto), pero
+// si vienen, tienen que ser strings no vacíos — mismo patrón que el resto de
+// las rutas (express-validator + validate.js), no un whitelist ad-hoc.
+const logValidators = [
+  body("event").optional().isString().trim().notEmpty().withMessage("event debe ser un string no vacío"),
+  body("section").optional().isString().trim().notEmpty().withMessage("section debe ser un string no vacío"),
+  body("message").optional().isString(),
+  body("componentStack").optional().isString(),
+  body("timestamp").optional().isString(),
+];
 
 /**
  * @openapi
@@ -35,10 +48,15 @@ const truncate = (value, max = 2000) =>
  *     responses:
  *       204:
  *         description: Log recibido
+ *       400:
+ *         description: Algún campo presente no es el tipo esperado (ej. event no es un string)
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/ValidationErrorResponse' }
  *       429:
  *         description: Demasiados logs desde este IP, reintentar más tarde
  */
-router.post("/client", logLimiter, (req, res) => {
+router.post("/client", logLimiter, logValidators, validate, (req, res) => {
   // Nunca confiar en el body crudo del cliente — solo estos campos conocidos
   // se pasan al logger, mismo criterio que la whitelist de updateProduct.
   const body = req.body ?? {};
