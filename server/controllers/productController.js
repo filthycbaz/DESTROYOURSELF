@@ -1,5 +1,6 @@
 // controllers/productController.js
 import Product from "../models/Product.js";
+import logSecurityEvent from "../config/securityLog.js";
 
 // GET ALL — con filtro opcional por categoría + paginación
 const getProducts = async (req, res, next) => {
@@ -15,6 +16,8 @@ const getProducts = async (req, res, next) => {
     const total = await Product.countDocuments(filter);
     const products = await Product.find(filter).skip(skip).limit(limitNum);
 
+    logSecurityEvent("product.list", { status: 200, category: category || null, count: products.length, total });
+
     res.status(200).json({
       products,
       pagination: {
@@ -25,6 +28,7 @@ const getProducts = async (req, res, next) => {
       },
     });
   } catch (error) {
+    logSecurityEvent("product.list_error", { status: 500, message: error.message });
     next(error);
   }
 };
