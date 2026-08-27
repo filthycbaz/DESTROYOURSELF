@@ -133,14 +133,14 @@ MongoDB al iniciar sesión. Mapa completo de qué dato vive dónde y por qué:
   logging caído nunca sea la causa de un segundo error.
 - **`ENABLE_DOCS` gatea `/api-docs`**: la documentación Swagger/OpenAPI se genera siempre, pero
   solo se expone si la variable está activa (oculta en producción por defecto).
-- **`npm audit --omit=dev` en 0 en ambos paquetes, no `npm audit` a secas**: `server` y `client`
-  tienen 0 vulnerabilidades en dependencias que efectivamente corren en producción. Lo que queda
-  (`server`: `vitest`/`vite`/`esbuild`, el test runner; `client`: `webpack-dev-server`/
-  `workbox-build`/`rollup-plugin-terser`, el build tooling de Create React App) son
-  `devDependencies` o herramientas de build que nunca se empaquetan ni llegan al navegador o
-  proceso del usuario final. El único fix que ofrece `npm audit fix --force` para lo que resta es
-  degradar `react-scripts` a una versión que no existe funcional, así que no se aplicó — no es
-  descuido, es que forzarlo rompe el proyecto sin cerrar un riesgo real.
+- **`npm audit` (sin flags) en 0 en `server`, 0 críticas en `client`**: `server` no tiene ninguna
+  vulnerabilidad, ni de producción ni de dev — se pudo bumpear `vitest`/`@vitest/coverage-v8` a la
+  v4 sin tocar ningún test (116/116 siguen pasando, coverage sigue funcionando). En `client` quedan
+  28 no-críticas (0 críticas), todas dentro del build tooling de Create React App
+  (`webpack-dev-server`/`workbox-build`/`rollup-plugin-terser`) — nunca se empaquetan ni llegan al
+  navegador del usuario final. El único fix que ofrece `npm audit fix --force` ahí es degradar
+  `react-scripts` a una versión que no existe funcional, así que no se aplicó — no es descuido, es
+  que forzarlo rompe el proyecto sin cerrar un riesgo real.
 
 Historial completo de decisiones y hallazgos de auditoría (incluyendo la auditoría OWASP Top
 10:2025 y su backlog de remediación): [`docs/backlog.md`](docs/backlog.md) y
