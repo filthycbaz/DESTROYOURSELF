@@ -23,6 +23,11 @@ build/
 .env.production.local
 .env
 
+# configuración local de MCP — .mcp.json solo existe para apuntar a .mcp.env
+# (contiene connection string de MongoDB Atlas en texto plano), ambos quedan fuera del repo
+.mcp.json
+.mcp.env
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
