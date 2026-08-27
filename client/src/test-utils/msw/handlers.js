@@ -137,4 +137,8 @@ export const handlers = [
     }
     return HttpResponse.json(mockOrder);
   }),
+
+  http.post(`${API_URL}/logs/client`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];

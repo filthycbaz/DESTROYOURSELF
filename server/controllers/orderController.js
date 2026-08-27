@@ -1,5 +1,6 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import logSecurityEvent from "../config/securityLog.js";
 
 const createOrder = async (req, res, next) => {
   try {
@@ -18,18 +19,21 @@ const createOrder = async (req, res, next) => {
       );
 
       if (!product) {
+        logSecurityEvent("order.create_rejected", { status: 400, reason: "product_not_found", userId: req.user._id, product: item.product });
         return res
           .status(400)
           .json({ message: `Producto no encontrado: ${item.product}` });
       }
 
       if (!product.isAvailable) {
+        logSecurityEvent("order.create_rejected", { status: 400, reason: "product_unavailable", userId: req.user._id, product: item.product });
         return res.status(400).json({
           message: `El producto "${product.name}" ya no está disponible`,
         });
       }
 
       if (product.stock < item.quantity) {
+        logSecurityEvent("order.create_rejected", { status: 400, reason: "insufficient_stock", userId: req.user._id, product: item.product, requested: item.quantity, available: product.stock });
         return res.status(400).json({
           message: `Stock insuficiente para "${product.name}". Disponible: ${product.stock}`,
         });
@@ -69,8 +73,12 @@ const createOrder = async (req, res, next) => {
     });
 
     await order.populate("items.product");
+
+    logSecurityEvent("order.create_success", { status: 201, userId: req.user._id, orderId: order._id, itemCount: enrichedItems.length, total: calculatedTotal });
+
     res.status(201).json(order);
   } catch (error) {
+    logSecurityEvent("order.create_error", { status: 500, userId: req.user?._id, message: error.message });
     next(error);
   }
 };

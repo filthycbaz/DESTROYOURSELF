@@ -10,6 +10,8 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import healthRoutes from "./routes/healthRoutes.js";
+import logRoutes from "./routes/logRoutes.js";
 
 const app = express();
 
@@ -37,6 +39,8 @@ if (env.docsEnabled) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 }
 
+app.use("/api/health", healthRoutes);
+app.use("/api/logs", logRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
